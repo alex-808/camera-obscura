@@ -38,6 +38,16 @@ app.get('/redirect', async (req, res) => {
     const tokens = await requestAccessAndRefreshTokens(req.query.code);
     spotifyApi.setAccessToken(tokens.access_token);
 
+    res.redirect('http://localhost:3000/playlists');
+});
+
+app.get('/playlists', async (req, res) => {
+    const playlists = await getPlaylists();
+    console.log('Sending playlists');
+    res.json(playlists);
+});
+
+const getPlaylists = async function (tokens) {
     let playlistArr = [];
     const limit = 50;
     let playlists = await spotifyApi.getUserPlaylists({
@@ -60,9 +70,8 @@ app.get('/redirect', async (req, res) => {
         console.log(playlist.name);
     }
     console.log(playlistArr.length);
-    res.body = playlistArr;
-    res.redirect('http://localhost:3000');
-});
+    return playlistArr;
+};
 
 const requestAccessAndRefreshTokens = async function (code) {
     const tokens = await axios({
