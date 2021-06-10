@@ -4,6 +4,7 @@ import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-node';
 import cors from 'cors';
 import qs from 'qs';
+import bodyParser from 'body-parser';
 
 dotenv.config();
 
@@ -16,10 +17,7 @@ const spotifyApi = new SpotifyWebApi({
 const app = express();
 
 app.use(cors());
-
-app.get('/', (req, res) => {
-    res.send('Request recieved');
-});
+app.use(bodyParser());
 
 app.get('/login', (req, res) => {
     const scopes = 'playlist-read-private user-read-private user-read-email';
@@ -34,20 +32,71 @@ app.get('/login', (req, res) => {
     );
 });
 
+const refreshAccessToken = async function () {
+    try {
+        const refreshToken = spotifyApi.getRefreshToken();
+        console.log('Refresh token:', refreshToken);
+        const res = await axios({
+            method: 'POST',
+            url: 'https://accounts.spotify.com/api/token',
+            data: qs.stringify({
+                grant_type: 'refresh_token',
+                refresh_token: refreshToken,
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET,
+            }),
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+            },
+        });
+        const { access_token: accessToken } = res.data;
+        spotifyApi.setAccessToken(accessToken);
+        console.log('Access token refreshed');
+    } catch (error) {
+        console.log('Refresh failed');
+    }
+};
+
 app.get('/redirect', async (req, res) => {
     const tokens = await requestAccessAndRefreshTokens(req.query.code);
     spotifyApi.setAccessToken(tokens.access_token);
+    spotifyApi.setRefreshToken(tokens.refresh_token);
+    console.log(tokens.refresh_token);
+    console.log(spotifyApi.getRefreshToken());
 
     res.redirect('http://localhost:3000/playlists');
 });
 
 app.get('/playlists', async (req, res) => {
-    const playlists = await getPlaylists();
-    console.log('Sending playlists');
-    res.json(playlists);
+    try {
+        const playlists = await getPlaylists();
+        console.log('Sending playlists');
+        res.json(playlists);
+    } catch (error) {
+        console.log(error.body.error.status);
+        console.log(error.body.error);
+        if (error.body.error.status === 401) refreshAccessToken();
+    }
 });
 
-const getPlaylists = async function (tokens) {
+app.post('/playlists', async (req, res) => {
+    const selectedPlaylists = req.body;
+
+    for (let playlist of selectedPlaylists) {
+        const playlistTracks = await spotifyApi.getPlaylistTracks(playlist);
+        console.log(playlistTracks);
+    }
+});
+
+app.get('/logout', (req, res) => {
+    // spotifyApi.setRefreshToken();
+    spotifyApi.setAccessToken('');
+
+    res.send('Logged out');
+});
+
+// ! I want to generalize this function to also be able to retrieve tracks from a playlist
+const getPlaylists = async function () {
     let playlistArr = [];
     const limit = 50;
     let playlists = await spotifyApi.getUserPlaylists({
@@ -66,11 +115,13 @@ const getPlaylists = async function (tokens) {
         playlistArr = [...playlistArr, ...playlists.body.items];
     }
 
-    for (const playlist of playlistArr) {
-        console.log(playlist.name);
-    }
-    console.log(playlistArr.length);
     return playlistArr;
+};
+
+const getPlaylistTracks = async function (playlistId) {
+    const tracks = await spotifyApi.getPlaylistTracks(playlistId);
+    console.log(tracks);
+    return tracks;
 };
 
 const requestAccessAndRefreshTokens = async function (code) {
