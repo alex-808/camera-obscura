@@ -15,6 +15,13 @@ export const login = (req, res) => {
     );
 };
 
+export const logout = (req, res) => {
+    // spotifyApi.setRefreshToken('');
+    spotifyApi.setAccessToken('');
+
+    res.send('Logged out');
+};
+
 export const postPlaylists = async (req, res) => {
     const selectedPlaylists = req.body;
 
@@ -24,13 +31,6 @@ export const postPlaylists = async (req, res) => {
     }
 };
 
-export const logout = (req, res) => {
-    // spotifyApi.setRefreshToken();
-    spotifyApi.setAccessToken('');
-
-    res.send('Logged out');
-};
-
 export const getPlaylists = async (req, res) => {
     try {
         const playlists = await getPlaylistsArr();
@@ -38,9 +38,9 @@ export const getPlaylists = async (req, res) => {
         res.json(playlists);
     } catch (error) {
         console.log(error);
-        // console.log(error.body.error.status);
-        // console.log(error.body.error);
-        // if (error.body.error.status === 401) refreshAccessToken();
+        if (error.body.error.status === 401) {
+            res.redirect('/refresh');
+        }
     }
 };
 
@@ -95,11 +95,11 @@ const requestAccessAndRefreshTokens = async function (code) {
     return tokens.data;
 };
 
-const refreshAccessToken = async function () {
+export const getRefreshAccessToken = async function (req, res) {
     try {
         const refreshToken = spotifyApi.getRefreshToken();
         console.log('Refresh token:', refreshToken);
-        const res = await axios({
+        const response = await axios({
             method: 'POST',
             url: 'https://accounts.spotify.com/api/token',
             data: qs.stringify({
@@ -112,10 +112,12 @@ const refreshAccessToken = async function () {
                 'content-type': 'application/x-www-form-urlencoded',
             },
         });
-        const { access_token: accessToken } = res.data;
+        const { access_token: accessToken } = response.data;
         spotifyApi.setAccessToken(accessToken);
         console.log('Access token refreshed');
+        res.redirect('/playlists');
     } catch (error) {
+        console.log(error);
         console.log('Refresh failed');
     }
 };

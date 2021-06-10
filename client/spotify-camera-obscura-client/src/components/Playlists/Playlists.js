@@ -36,6 +36,8 @@ function Playlists() {
     } else {
         return (
             <div>
+                <button onClick={submitSelection}>Submit</button>
+                State
                 {playlists.map((playlist) => (
                     <>
                         <Playlist playlist={playlist} />
@@ -47,8 +49,6 @@ function Playlists() {
                         />
                     </>
                 ))}
-                State
-                <button onClick={submitSelection}>Submit</button>
             </div>
         );
     }

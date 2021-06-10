@@ -9,6 +9,4 @@ const spotifyApi = new SpotifyWebApi({
     redirectUri: process.env.REDIRECT_URI,
 });
 
-console.log(spotifyApi);
-
 export { spotifyApi };

@@ -7,6 +7,7 @@ import {
     postPlaylists,
     getPlaylists,
     getRedirect,
+    getRefreshAccessToken,
 } from './controllers/controllers.js';
 
 const app = express();
@@ -23,6 +24,8 @@ app.get('/playlists', getPlaylists);
 app.post('/playlists', postPlaylists);
 
 app.get('/logout', logout);
+
+app.get('/refresh', getRefreshAccessToken);
 
 const PORT = process.env.PORT || 4000;
 
