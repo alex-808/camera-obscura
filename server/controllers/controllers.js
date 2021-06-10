@@ -1,0 +1,121 @@
+import { spotifyApi } from './spotifyApi.js';
+import axios from 'axios';
+import qs from 'qs';
+
+export const login = (req, res) => {
+    const scopes = 'playlist-read-private user-read-private user-read-email';
+    res.redirect(
+        'https://accounts.spotify.com/authorize' +
+            '?response_type=code' +
+            '&client_id=' +
+            process.env.CLIENT_ID +
+            (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
+            '&redirect_uri=' +
+            encodeURIComponent(process.env.REDIRECT_URI)
+    );
+};
+
+export const postPlaylists = async (req, res) => {
+    const selectedPlaylists = req.body;
+
+    for (let playlist of selectedPlaylists) {
+        const playlistTracks = await spotifyApi.getPlaylistTracks(playlist);
+        console.log(playlistTracks);
+    }
+};
+
+export const logout = (req, res) => {
+    // spotifyApi.setRefreshToken();
+    spotifyApi.setAccessToken('');
+
+    res.send('Logged out');
+};
+
+export const getPlaylists = async (req, res) => {
+    try {
+        const playlists = await getPlaylistsArr();
+        console.log('Sending playlists');
+        res.json(playlists);
+    } catch (error) {
+        console.log(error);
+        // console.log(error.body.error.status);
+        // console.log(error.body.error);
+        // if (error.body.error.status === 401) refreshAccessToken();
+    }
+};
+
+const getPlaylistsArr = async function () {
+    let playlistArr = [];
+    const limit = 50;
+    let playlists = await spotifyApi.getUserPlaylists({
+        limit: limit,
+    });
+    let { offset } = playlists.body;
+
+    playlistArr = [...playlistArr, ...playlists.body.items];
+
+    while (playlists.body.next) {
+        playlists = await spotifyApi.getUserPlaylists({
+            limit: limit,
+            offset: offset + limit,
+        });
+        offset = playlists.body.offset;
+        playlistArr = [...playlistArr, ...playlists.body.items];
+    }
+
+    return playlistArr;
+};
+
+export const getRedirect = async (req, res) => {
+    const tokens = await requestAccessAndRefreshTokens(req.query.code);
+    spotifyApi.setAccessToken(tokens.access_token);
+    spotifyApi.setRefreshToken(tokens.refresh_token);
+    console.log(tokens.refresh_token);
+    console.log(spotifyApi.getRefreshToken());
+
+    res.redirect('http://localhost:3000/playlists');
+};
+
+const requestAccessAndRefreshTokens = async function (code) {
+    const tokens = await axios({
+        method: 'POST',
+        url: 'https://accounts.spotify.com/api/token',
+        data: qs.stringify({
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: process.env.REDIRECT_URI,
+            client_id: process.env.CLIENT_ID,
+            client_secret: process.env.CLIENT_SECRET,
+        }),
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+        },
+    });
+
+    return tokens.data;
+};
+
+const refreshAccessToken = async function () {
+    try {
+        const refreshToken = spotifyApi.getRefreshToken();
+        console.log('Refresh token:', refreshToken);
+        const res = await axios({
+            method: 'POST',
+            url: 'https://accounts.spotify.com/api/token',
+            data: qs.stringify({
+                grant_type: 'refresh_token',
+                refresh_token: refreshToken,
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET,
+            }),
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+            },
+        });
+        const { access_token: accessToken } = res.data;
+        spotifyApi.setAccessToken(accessToken);
+        console.log('Access token refreshed');
+    } catch (error) {
+        console.log('Refresh failed');
+    }
+};
