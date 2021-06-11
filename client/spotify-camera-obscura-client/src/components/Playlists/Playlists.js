@@ -10,7 +10,6 @@ function Playlists() {
             const { data: playlists } = await api.getPlaylists();
             setPlaylists(playlists);
             console.log(playlists);
-            console.log(selectedPlaylists);
         };
 
         fetchPlaylists();
@@ -31,6 +30,7 @@ function Playlists() {
                 selectedPlaylists.filter((id) => id !== e.target.id)
             );
         }
+        console.log(selectedPlaylists);
     };
 
     if (!playlists) {
@@ -41,15 +41,11 @@ function Playlists() {
                 <button onClick={submitSelection}>Submit</button>
                 State
                 {playlists.map((playlist) => (
-                    <>
-                        <Playlist playlist={playlist} key={playlist.id} />
-                        <input
-                            type="checkbox"
-                            key={playlist.id}
-                            id={playlist.id}
-                            onChange={handleClick}
-                        />
-                    </>
+                    <Playlist
+                        playlist={playlist}
+                        handleClick={handleClick}
+                        key={playlist.id}
+                    />
                 ))}
             </div>
         );
