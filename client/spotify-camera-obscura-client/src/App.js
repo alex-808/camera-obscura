@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
-import * as api from './api/requests';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Login from './components/Login.js';
 import Logout from './components/Logout';
 import Playlists from './components/Playlists/Playlists';

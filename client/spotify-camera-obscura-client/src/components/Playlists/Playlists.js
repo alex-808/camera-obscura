@@ -18,6 +18,7 @@ function Playlists() {
 
     const submitSelection = async function () {
         console.log(selectedPlaylists);
+        // After submission should I redirect to a new page and pass this with it?
         const response = await api.postSelectedPlaylists(selectedPlaylists);
         console.log(response);
     };
