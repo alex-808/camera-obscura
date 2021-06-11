@@ -16,9 +16,10 @@ function Playlists() {
         fetchPlaylists();
     }, []);
 
-    const submitSelection = function () {
+    const submitSelection = async function () {
         console.log(selectedPlaylists);
-        api.postSelectedPlaylists(selectedPlaylists);
+        const response = await api.postSelectedPlaylists(selectedPlaylists);
+        console.log(response);
     };
 
     const handleClick = function (e) {
@@ -40,7 +41,7 @@ function Playlists() {
                 State
                 {playlists.map((playlist) => (
                     <>
-                        <Playlist playlist={playlist} />
+                        <Playlist playlist={playlist} key={playlist.id} />
                         <input
                             type="checkbox"
                             key={playlist.id}

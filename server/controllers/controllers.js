@@ -25,10 +25,28 @@ export const logout = (req, res) => {
 export const postPlaylists = async (req, res) => {
     const selectedPlaylists = req.body;
 
+    let allTracks = [];
+
     for (let playlist of selectedPlaylists) {
         const playlistTracks = await spotifyApi.getPlaylistTracks(playlist);
-        console.log(playlistTracks);
+        const tracks = playlistTracks.body.items;
+        allTracks = [...allTracks, ...tracks];
     }
+
+    const sorted = sortTracks(allTracks);
+    res.send({ sorted });
+};
+
+const sortTracks = function (tracks) {
+    const map = new Map();
+
+    for (let trackInfo of tracks) {
+        map.set(trackInfo.added_at, trackInfo.track.id);
+    }
+
+    const sorted = new Map([...map].sort((a, b) => a - b));
+    const sortedObj = Object.fromEntries(sorted);
+    return sortedObj;
 };
 
 export const getPlaylists = async (req, res) => {
@@ -70,8 +88,6 @@ export const getRedirect = async (req, res) => {
     const tokens = await requestAccessAndRefreshTokens(req.query.code);
     spotifyApi.setAccessToken(tokens.access_token);
     spotifyApi.setRefreshToken(tokens.refresh_token);
-    console.log(tokens.refresh_token);
-    console.log(spotifyApi.getRefreshToken());
 
     res.redirect('http://localhost:3000/playlists');
 };
