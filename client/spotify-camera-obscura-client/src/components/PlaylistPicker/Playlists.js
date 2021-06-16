@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as api from '../../api/requests.js';
-import Playlist from './Playlist/Playlist.js';
+import Playlist from './PlaylistPicker/PlaylistPicker.js';
 
 function PlaylistPicker({ setTrackData }) {
     const [playlists, setPlaylists] = useState(0);
@@ -18,9 +18,9 @@ function PlaylistPicker({ setTrackData }) {
     const submitSelection = async function () {
         console.log(selectedPlaylists);
         // After submission should I redirect to a new page and pass this with it?
-        const response = await api.postSelectedPlaylists(selectedPlaylists);
-        setTrackData(response);
-        console.log(response);
+        const { data } = await api.postSelectedPlaylists(selectedPlaylists);
+        setTrackData(data);
+        console.log(data);
     };
 
     const handleClick = function (e) {
