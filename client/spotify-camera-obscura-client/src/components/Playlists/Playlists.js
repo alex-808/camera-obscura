@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import * as api from '../../api/requests.js';
 import Playlist from './Playlist/Playlist.js';
 
-function Playlists() {
+function PlaylistPicker({ setTrackData }) {
     const [playlists, setPlaylists] = useState(0);
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     useEffect(() => {
@@ -19,6 +19,7 @@ function Playlists() {
         console.log(selectedPlaylists);
         // After submission should I redirect to a new page and pass this with it?
         const response = await api.postSelectedPlaylists(selectedPlaylists);
+        setTrackData(response);
         console.log(response);
     };
 
@@ -52,4 +53,4 @@ function Playlists() {
     }
 }
 
-export default Playlists;
+export default PlaylistPicker;

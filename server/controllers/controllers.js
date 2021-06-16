@@ -89,7 +89,7 @@ export const getRedirect = async (req, res) => {
     spotifyApi.setAccessToken(tokens.access_token);
     spotifyApi.setRefreshToken(tokens.refresh_token);
 
-    res.redirect('http://localhost:3000/playlists');
+    res.redirect('http://localhost:3000/home');
 };
 
 const requestAccessAndRefreshTokens = async function (code) {
