@@ -28,10 +28,16 @@ export const postPlaylists = async (req, res) => {
     let allTracks = [];
 
     for (let playlist of selectedPlaylists) {
-        const playlistTracks = await spotifyApi.getPlaylistTracks(playlist);
-        const tracks = playlistTracks.body.items;
-        allTracks = [...allTracks, ...tracks];
+        const playlistTracks = await retrievePlaylistTracks(playlist);
+        allTracks = [...allTracks, ...playlistTracks];
     }
+    const analysisData = await retrieveTracksAnalysis(allTracks);
+
+    allTracks.forEach(
+        (track, i) => (track.analysis_features = analysisData[i])
+    );
+
+    // console.log(allTracks);
 
     const sorted = sortTracks(allTracks);
     res.send({ sorted });
@@ -39,14 +45,51 @@ export const postPlaylists = async (req, res) => {
 
 const sortTracks = function (tracks) {
     const map = new Map();
-
+    // todo Figure out a different schema to return track data in
     for (let trackInfo of tracks) {
         map.set(trackInfo.added_at, trackInfo);
     }
-
     const sorted = new Map([...map].sort((a, b) => a - b));
     const sortedObj = Object.fromEntries(sorted);
     return sortedObj;
+};
+
+const retrievePlaylistTracks = async function (playlist) {
+    let playlistTracks = [];
+    let response = await spotifyApi.getPlaylistTracks(playlist);
+    const limit = 100;
+    playlistTracks = [...response.body.items];
+    let offset = limit;
+
+    while (response.body.next) {
+        response = await spotifyApi.getPlaylistTracks(playlist, {
+            offset: offset,
+        });
+        let tracks = response.body.items;
+        playlistTracks = [...playlistTracks, ...tracks];
+        offset += limit;
+    }
+    return playlistTracks;
+};
+
+const retrieveTracksAnalysis = async function (tracks) {
+    const limit = 100;
+    const ids = [];
+    const analysisData = [];
+    for (let trackInfo of tracks) {
+        ids.push(trackInfo.track.id);
+    }
+    console.log(ids);
+    console.log(ids.length);
+    while (ids.length > 0) {
+        const idGroup = ids.splice(0, limit);
+        const response = await spotifyApi.getAudioFeaturesForTracks(idGroup);
+        const audioFeatures = response.body.audio_features;
+        analysisData.push(...audioFeatures);
+    }
+
+    console.log(analysisData.length);
+    return analysisData;
 };
 
 export const getPlaylists = async (req, res) => {

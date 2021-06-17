@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, React } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
@@ -7,27 +7,28 @@ const Explorer = function ({ trackData }) {
         console.log(trackData);
     });
 
-    // const tileContentGenerator = function ({ activeStartDate, date, view }) {
-    //     console.log(view);
-    //     if (view === 'month' && date.getDay() === 0) {
-    //         return <p>It's Sunday!</p>;
-    //     } else {
-    //         return null;
-    //     }
-    // };
-
-    const tileContentGeneratorV2 = function ({ activeStartDate, date, view }) {
-        console.log(date);
+    const tileContentGenerator = function ({ activeStartDate, date, view }) {
         if (view === 'month') {
+            const tracks = [];
             for (let [trackDate, trackInfo] of Object.entries(trackData)) {
                 trackDate = new Date(trackDate);
-                console.log(trackDate);
-
                 if (isSameDay(date, trackDate)) {
-                    return <p>{trackInfo.track.name}</p>;
+                    tracks.push(trackInfo.track.name);
                 }
-                //! this return is causing the loop to terminate
             }
+
+            return tracks.map((track) => <p>{track}</p>);
+        }
+        if (view === 'year') {
+            const tracks = [];
+
+            for (let [trackDate, trackInfo] of Object.entries(trackData)) {
+                trackDate = new Date(trackDate);
+                if (isSameMonth(date, trackDate)) {
+                    tracks.push(trackInfo.track.name);
+                }
+            }
+            return tracks.map((track) => <p>{track}</p>);
         }
     };
 
@@ -40,17 +41,20 @@ const Explorer = function ({ trackData }) {
     };
 
     const isSameMonth = function (date1, date2) {
-        // todo
+        return (
+            date1.getFullYear() === date2.getFullYear() &&
+            date1.getMonth() === date2.getMonth()
+        );
     };
 
     const isSameYear = function (date1, date2) {
-        // todo
+        return date1.getFullYear() === date2.getFullYear();
     };
 
     return (
         <>
             <div>Explorer</div>
-            <Calendar tileContent={tileContentGeneratorV2} />
+            <Calendar tileContent={tileContentGenerator} calendarType="US" />
         </>
     );
 };
