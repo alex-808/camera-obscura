@@ -19,7 +19,8 @@ function PlaylistPicker({ setTrackData }) {
         console.log(selectedPlaylists);
         // After submission should I redirect to a new page and pass this with it?
         const { data } = await api.postSelectedPlaylists(selectedPlaylists);
-        setTrackData(data);
+        const { sorted } = data;
+        setTrackData(sorted);
         console.log(data);
     };
 

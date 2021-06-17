@@ -41,7 +41,7 @@ const sortTracks = function (tracks) {
     const map = new Map();
 
     for (let trackInfo of tracks) {
-        map.set(trackInfo.added_at, trackInfo.track.id);
+        map.set(trackInfo.added_at, trackInfo);
     }
 
     const sorted = new Map([...map].sort((a, b) => a - b));
