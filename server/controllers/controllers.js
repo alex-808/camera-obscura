@@ -9,6 +9,8 @@ import {
     requestAccessAndRefreshTokens,
 } from './helpers.js';
 
+// todo Add appending of playlists added at the same time to the same date
+
 export const login = (req, res) => {
     const scopes = 'playlist-read-private user-read-private user-read-email';
     res.redirect(

@@ -3,12 +3,20 @@ import { Calendar } from 'react-calendar';
 import Linegraph from '../Linegraph/Linegraph';
 import 'react-calendar/dist/Calendar.css';
 
+// ! This all needs a big time refactor
+
 const Explorer = function ({ trackData }) {
-    const [currentTracks, setCurrentTracks] = useState(0);
-    const [currentDateRange, setCurrentDateRange] = useState(0);
+    console.log(trackData);
+    const [currentDateRange, setCurrentDateRange] = useState(getDateRange());
+    const [currentTracks, setCurrentTracks] = useState(
+        getTracksInRange(trackData)
+    );
 
     useEffect(() => {
-        getDateRange();
+        // let range = getDateRange();
+        // setCurrentDateRange(range);
+        // console.log('currentDateRange', currentDateRange);
+        // getTracksInRange(trackData);
     }, []);
 
     const tileContentGenerator = function ({ activeStartDate, date, view }) {
@@ -55,43 +63,60 @@ const Explorer = function ({ trackData }) {
         return date1.getFullYear() === date2.getFullYear();
     };
 
-    const getDateRange = function (props) {
-        console.log('props', props);
-
+    function getDateRange(props) {
         let startDate = !props ? new Date() : props.activeStartDate;
+        let range;
         if (props) {
             if (props.view === 'month') {
-                const currentMonth = startDate.getMonth();
+                const currentMonth = props.activeStartDate.getMonth();
                 const currentYear = startDate.getFullYear();
-                const range = [
+                range = [
                     new Date(currentYear, currentMonth),
                     new Date(currentYear, currentMonth + 1),
                 ];
                 console.log(range);
-                setCurrentDateRange(range);
             }
             if (props.view === 'year') {
                 const currentYear = startDate.getFullYear();
                 console.log('currentYear', currentYear);
-                const range = [
+                range = [
                     new Date(currentYear, 0),
                     new Date(currentYear + 1, 0),
                 ];
                 console.log(range);
-                setCurrentDateRange(range);
             }
         } else {
             const currentMonth = startDate.getMonth();
             const currentYear = startDate.getFullYear();
-            const range = [
+            range = [
                 new Date(currentYear, currentMonth),
                 new Date(currentYear, currentMonth + 1),
             ];
             console.log(range);
-            setCurrentDateRange(range);
         }
-    };
 
+        return range;
+    }
+
+    function updateDateRange(props) {
+        const range = getDateRange(props);
+        setCurrentDateRange(range);
+    }
+
+    function getTracksInRange(tracks) {
+        const tracksInRange = [];
+        for (let [trackDate, trackInfo] of Object.entries(tracks)) {
+            trackDate = new Date(trackDate);
+            if (
+                trackDate > currentDateRange[0] &&
+                trackDate < currentDateRange[currentDateRange.length - 1]
+            ) {
+                tracksInRange.push(trackDate);
+            }
+        }
+
+        return tracksInRange;
+    }
     return (
         <>
             <div>Explorer</div>
@@ -99,9 +124,9 @@ const Explorer = function ({ trackData }) {
                 tileContent={tileContentGenerator}
                 calendarType="US"
                 // view="month"
-                activeStartDate={currentDateRange[0]}
-                onViewChange={getDateRange}
-                onActiveStartDateChange={getDateRange}
+                // activeStartDate={currentDateRange[0]}
+                onViewChange={updateDateRange}
+                onActiveStartDateChange={updateDateRange}
             />
             {/* Get start and end dates for the particular calendar view and pass all that data to linegraph */}
             <Linegraph dateRange={currentDateRange} />

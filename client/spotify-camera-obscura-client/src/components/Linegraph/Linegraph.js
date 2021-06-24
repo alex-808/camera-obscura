@@ -1,71 +1,57 @@
-import { useRef, useEffect } from 'react';
-import {
-    Chart,
-    LineController,
-    LineElement,
-    PointElement,
-    LinearScale,
-    CategoryScale,
-    Title,
-} from 'chart.js';
+import { useEffect, useState } from 'react';
+import { Line } from 'react-chartjs-2';
 
-const Linegraph = function (props) {
-    const chartRef = useRef();
+const Linegraph = function ({ dateRange }) {
+    const [labels, setLabels] = useState(0);
+    const [datas, setDatas] = useState(0);
 
     useEffect(() => {
-        const myChartRef = chartRef.current.getContext('2d');
-        Chart.register(
-            LineController,
-            LineElement,
-            PointElement,
-            LinearScale,
-            CategoryScale,
-            Title
-        );
-        const myChart = new Chart(myChartRef, {
-            type: 'line',
-            data: {
-                labels: [
-                    'Red',
-                    'Blue',
-                    'Yellow',
-                    'Green',
-                    'Purple',
-                    'Orange',
-                    'Pink',
-                ],
-                datasets: [
-                    {
-                        label: '# of Votes',
-                        data: [12, 19, 3, 5, 2, 3, 7],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)',
-                            'rgba(244, 19, 234, 0.2)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)',
-                            'rgba(244, 19, 234, 1)',
-                        ],
-                        borderWidth: 1,
-                    },
-                ],
+        console.log(dateRange);
+        let [labelArr, datasArr] = getDates(dateRange[0], dateRange[1]);
+        setLabels(labelArr);
+        setDatas(datasArr);
+    }, [dateRange]);
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: '# of Votes',
+                data: datas,
+                fill: false,
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgba(255, 99, 132, 0.2)',
             },
-        });
+        ],
+    };
 
-        myChart.destroy();
-    });
+    const options = {
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        beginAtZero: true,
+                    },
+                },
+            ],
+        },
+    };
 
-    return <canvas ref={chartRef}></canvas>;
+    function getDates(startDate, stopDate) {
+        var dateArray = [];
+        var dataArray = [];
+        var currentDate = startDate;
+        let i = 0;
+        while (currentDate <= stopDate) {
+            dataArray.push(i);
+            dateArray.push(currentDate);
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        // console.log('dateArray', dateArray);
+        // console.log('dataArray', dataArray);
+        return [dateArray, dataArray];
+    }
+
+    return <Line data={data} options={options} />;
 };
 
 export default Linegraph;
