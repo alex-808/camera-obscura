@@ -5,7 +5,7 @@ import { testTracks } from '../../testData/testData';
 
 const Home = function (props) {
     // const [trackData, setTrackData] = useState(0);
-    const [trackData, setTrackData] = useState(testTracks);
+    const [trackData, setTrackData] = useState(testTracks.sorted);
 
     if (!trackData) {
         return <PlaylistPicker setTrackData={setTrackData} />;

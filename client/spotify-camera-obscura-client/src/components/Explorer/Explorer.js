@@ -6,7 +6,6 @@ import 'react-calendar/dist/Calendar.css';
 // ! This all needs a big time refactor
 
 const Explorer = function ({ trackData }) {
-    console.log(trackData);
     const [currentDateRange, setCurrentDateRange] = useState(getDateRange());
     const [currentTracks, setCurrentTracks] = useState(
         getTracksInRange(trackData)
@@ -23,6 +22,7 @@ const Explorer = function ({ trackData }) {
         if (view === 'month') {
             const tracks = [];
             for (let [trackDate, trackInfo] of Object.entries(trackData)) {
+                console.log(trackDate);
                 trackDate = new Date(trackDate);
                 if (isSameDay(date, trackDate)) {
                     tracks.push(trackInfo);
