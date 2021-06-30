@@ -99,7 +99,7 @@ const Explorer = function ({ trackData }) {
             <Calendar
                 tileContent={tileContentGenerator}
                 calendarType="US"
-                // onViewChange={updateDateRange}
+                onViewChange={updateDateRange}
                 onActiveStartDateChange={updateDateRange}
             />
             {/* Get start and end dates for the particular calendar view and pass all that data to linegraph */}
