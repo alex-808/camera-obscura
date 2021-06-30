@@ -13,7 +13,7 @@ const Explorer = function ({ trackData }) {
     );
 
     useEffect(() => {
-        console.log(currentDateRange);
+        setCurrentTracks(getTracksInRange(trackData));
     }, [currentDateRange]);
 
     const tileContentGenerator = function ({ activeStartDate, date, view }) {
@@ -55,7 +55,6 @@ const Explorer = function ({ trackData }) {
             }
             if (props.view === 'year') {
                 const currentYear = startDate.getFullYear();
-                console.log('currentYear', currentYear);
                 range = [
                     new Date(currentYear, 0),
                     new Date(currentYear + 1, 0),
@@ -70,8 +69,6 @@ const Explorer = function ({ trackData }) {
                 new Date(currentYear, currentMonth + 1),
             ];
         }
-
-        console.log(range);
 
         return range;
     }
@@ -102,7 +99,7 @@ const Explorer = function ({ trackData }) {
             <Calendar
                 tileContent={tileContentGenerator}
                 calendarType="US"
-                onViewChange={updateDateRange}
+                // onViewChange={updateDateRange}
                 onActiveStartDateChange={updateDateRange}
             />
             {/* Get start and end dates for the particular calendar view and pass all that data to linegraph */}

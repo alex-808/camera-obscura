@@ -6,12 +6,13 @@ const Linegraph = function ({ dateRange, currentTracks }) {
     const [datas, setDatas] = useState(0);
 
     useEffect(() => {
-        // console.log(dateRange);
-        let [labelArr, datasArr] = getDates(dateRange[0], dateRange[1]);
-        setLabels(labelArr);
-        setDatas(datasArr);
-        // console.log(labelArr);
-    }, [dateRange]);
+        console.log(dateRange);
+        console.log(currentTracks);
+        // let [labelArr, datasArr] = getDates(dateRange[0], dateRange[1]);
+        // setLabels(labelArr);
+        // setDatas(datasArr);
+        // // console.log(labelArr);
+    }, [dateRange, currentTracks]);
 
     const data = {
         labels: labels,
@@ -38,21 +39,22 @@ const Linegraph = function ({ dateRange, currentTracks }) {
         },
     };
 
-    function getDates(startDate, stopDate) {
-        var dateArray = [];
-        var dataArray = [];
-        var currentDate = startDate;
-        let i = 0;
-        while (currentDate <= stopDate) {
-            dataArray.push(i);
-            dateArray.push(new Date(currentDate));
-            // console.log(currentDate);
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        // console.log('dateArray', dateArray);
-        // console.log('dataArray', dataArray);
-        return [dateArray, dataArray];
-    }
+    // ! this function was mutating the dateRange prop being passed in
+    // function getDates(startDate, stopDate) {
+    //     var dateArray = [];
+    //     var dataArray = [];
+    //     var currentDate = startDate;
+    //     let i = 0;
+    //     while (currentDate <= stopDate) {
+    //         dataArray.push(i);
+    //         dateArray.push(new Date(currentDate));
+    //         // console.log(currentDate);
+    //         currentDate.setDate(currentDate.getDate() + 1);
+    //     }
+    //     // console.log('dateArray', dateArray);
+    //     // console.log('dataArray', dataArray);
+    //     return [dateArray, dataArray];
+    // }
 
     return <Line data={data} options={options} />;
 };
