@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef, React } from 'react';
+import { useState, React, useEffect } from 'react';
 import { Calendar } from 'react-calendar';
 import Linegraph from '../Linegraph/Linegraph';
 import 'react-calendar/dist/Calendar.css';
+import * as dates from '../../utils/dates';
 
 // ! This all needs a big time refactor
 
@@ -12,19 +13,15 @@ const Explorer = function ({ trackData }) {
     );
 
     useEffect(() => {
-        // let range = getDateRange();
-        // setCurrentDateRange(range);
-        // console.log('currentDateRange', currentDateRange);
-        // getTracksInRange(trackData);
-    }, []);
+        console.log(currentDateRange);
+    }, [currentDateRange]);
 
     const tileContentGenerator = function ({ activeStartDate, date, view }) {
         if (view === 'month') {
             const tracks = [];
             for (let [trackDate, trackInfo] of Object.entries(trackData)) {
-                console.log(trackDate);
                 trackDate = new Date(trackDate);
-                if (isSameDay(date, trackDate)) {
+                if (dates.isSameDay(date, trackDate)) {
                     tracks.push(trackInfo);
                 }
             }
@@ -35,32 +32,13 @@ const Explorer = function ({ trackData }) {
 
             for (let [trackDate, trackInfo] of Object.entries(trackData)) {
                 trackDate = new Date(trackDate);
-                if (isSameMonth(date, trackDate)) {
+                if (dates.isSameMonth(date, trackDate)) {
                     tracks.push(trackInfo);
                 }
             }
             // setCurrentTracks(tracks);
             return tracks.map((trackInfo) => <p>{trackInfo.track.name}</p>);
         }
-    };
-
-    const isSameDay = function (date1, date2) {
-        return (
-            date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth() &&
-            date1.getUTCDate() === date2.getUTCDate()
-        );
-    };
-
-    const isSameMonth = function (date1, date2) {
-        return (
-            date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth()
-        );
-    };
-
-    const isSameYear = function (date1, date2) {
-        return date1.getFullYear() === date2.getFullYear();
     };
 
     function getDateRange(props) {
@@ -74,7 +52,6 @@ const Explorer = function ({ trackData }) {
                     new Date(currentYear, currentMonth),
                     new Date(currentYear, currentMonth + 1),
                 ];
-                console.log(range);
             }
             if (props.view === 'year') {
                 const currentYear = startDate.getFullYear();
@@ -83,8 +60,8 @@ const Explorer = function ({ trackData }) {
                     new Date(currentYear, 0),
                     new Date(currentYear + 1, 0),
                 ];
-                console.log(range);
             }
+            // todo Add decade and century views
         } else {
             const currentMonth = startDate.getMonth();
             const currentYear = startDate.getFullYear();
@@ -92,13 +69,15 @@ const Explorer = function ({ trackData }) {
                 new Date(currentYear, currentMonth),
                 new Date(currentYear, currentMonth + 1),
             ];
-            console.log(range);
         }
+
+        console.log(range);
 
         return range;
     }
 
     function updateDateRange(props) {
+        // todo make this generic to also update currentTracks
         const range = getDateRange(props);
         setCurrentDateRange(range);
     }
@@ -123,13 +102,14 @@ const Explorer = function ({ trackData }) {
             <Calendar
                 tileContent={tileContentGenerator}
                 calendarType="US"
-                // view="month"
-                // activeStartDate={currentDateRange[0]}
                 onViewChange={updateDateRange}
                 onActiveStartDateChange={updateDateRange}
             />
             {/* Get start and end dates for the particular calendar view and pass all that data to linegraph */}
-            <Linegraph dateRange={currentDateRange} />
+            <Linegraph
+                dateRange={currentDateRange}
+                currentTracks={currentTracks}
+            />
         </>
     );
 };

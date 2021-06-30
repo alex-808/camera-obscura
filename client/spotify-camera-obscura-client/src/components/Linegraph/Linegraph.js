@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 
-const Linegraph = function ({ dateRange }) {
+const Linegraph = function ({ dateRange, currentTracks }) {
     const [labels, setLabels] = useState(0);
     const [datas, setDatas] = useState(0);
 
     useEffect(() => {
-        console.log(dateRange);
+        // console.log(dateRange);
         let [labelArr, datasArr] = getDates(dateRange[0], dateRange[1]);
         setLabels(labelArr);
         setDatas(datasArr);
+        // console.log(labelArr);
     }, [dateRange]);
+
     const data = {
         labels: labels,
         datasets: [
@@ -43,7 +45,8 @@ const Linegraph = function ({ dateRange }) {
         let i = 0;
         while (currentDate <= stopDate) {
             dataArray.push(i);
-            dateArray.push(currentDate);
+            dateArray.push(new Date(currentDate));
+            // console.log(currentDate);
             currentDate.setDate(currentDate.getDate() + 1);
         }
         // console.log('dateArray', dateArray);
