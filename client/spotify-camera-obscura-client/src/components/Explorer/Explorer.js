@@ -87,7 +87,7 @@ const Explorer = function ({ trackData }) {
                 trackDate > currentDateRange[0] &&
                 trackDate < currentDateRange[currentDateRange.length - 1]
             ) {
-                tracksInRange.push(trackDate);
+                tracksInRange.push(trackInfo);
             }
         }
 
