@@ -78,7 +78,6 @@ const Explorer = function ({ trackData }) {
 
     function getTracksInRange(tracks) {
         const tracksInRange = [];
-        console.log(tracks);
         for (let [trackDate, trackInfo] of Object.entries(tracks)) {
             trackDate = new Date(trackDate);
             if (

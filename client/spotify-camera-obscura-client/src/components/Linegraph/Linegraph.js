@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import * as dateUtils from '../../utils/dates';
+import { randomColor } from '../../utils/charts';
 
 const Linegraph = function ({ dateRange, currentTracks }) {
     const [labels, setLabels] = useState(0);
@@ -82,14 +83,24 @@ const Linegraph = function ({ dateRange, currentTracks }) {
             {
                 label: 'energy',
                 data: datasets.energy,
+                backgroundColor: randomColor(),
+                borderColor: randomColor(),
+                tension: 0.5,
             },
+
             {
                 label: 'acousticness',
                 data: datasets.acousticness,
+                backgroundColor: randomColor(),
+                borderColor: randomColor(),
+                tension: 0.5,
             },
             {
                 label: 'instrumentalness',
                 data: datasets.instrumentalness,
+                backgroundColor: randomColor(),
+                borderColor: randomColor(),
+                tension: 0.5,
             },
             // {
             //     label: 'key',
@@ -98,6 +109,9 @@ const Linegraph = function ({ dateRange, currentTracks }) {
             {
                 label: 'liveness',
                 data: datasets.liveness,
+                backgroundColor: randomColor(),
+                borderColor: randomColor(),
+                tension: 0.5,
             },
             // {
             //     label: 'loudness',
@@ -106,10 +120,16 @@ const Linegraph = function ({ dateRange, currentTracks }) {
             {
                 label: 'mode',
                 data: datasets.mode,
+                backgroundColor: randomColor(),
+                borderColor: randomColor(),
+                tension: 0.5,
             },
             {
                 label: 'speechiness',
                 data: datasets.speechiness,
+                backgroundColor: randomColor(),
+                borderColor: randomColor(),
+                tension: 0.5,
             },
             // {
             //     label: 'tempo',
@@ -122,6 +142,9 @@ const Linegraph = function ({ dateRange, currentTracks }) {
             {
                 label: 'valence',
                 data: datasets.valence,
+                backgroundColor: randomColor(),
+                borderColor: randomColor(),
+                tension: 0.5,
             },
         ],
     };
