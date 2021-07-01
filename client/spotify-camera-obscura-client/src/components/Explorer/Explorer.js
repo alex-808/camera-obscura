@@ -4,8 +4,6 @@ import Linegraph from '../Linegraph/Linegraph';
 import 'react-calendar/dist/Calendar.css';
 import * as dates from '../../utils/dates';
 
-// ! This all needs a big time refactor
-
 const Explorer = function ({ trackData }) {
     const [currentDateRange, setCurrentDateRange] = useState(getDateRange());
     const [currentTracks, setCurrentTracks] = useState(
@@ -16,7 +14,7 @@ const Explorer = function ({ trackData }) {
         setCurrentTracks(getTracksInRange(trackData));
     }, [currentDateRange]);
 
-    const tileContentGenerator = function ({ activeStartDate, date, view }) {
+    const generateTileContent = function ({ activeStartDate, date, view }) {
         if (view === 'month') {
             const tracks = [];
             for (let [trackDate, trackInfo] of Object.entries(trackData)) {
@@ -36,7 +34,6 @@ const Explorer = function ({ trackData }) {
                     tracks.push(trackInfo);
                 }
             }
-            // setCurrentTracks(tracks);
             return tracks.map((trackInfo) => <p>{trackInfo.track.name}</p>);
         }
     };
@@ -81,6 +78,7 @@ const Explorer = function ({ trackData }) {
 
     function getTracksInRange(tracks) {
         const tracksInRange = [];
+        console.log(tracks);
         for (let [trackDate, trackInfo] of Object.entries(tracks)) {
             trackDate = new Date(trackDate);
             if (
@@ -97,7 +95,7 @@ const Explorer = function ({ trackData }) {
         <>
             <div>Explorer</div>
             <Calendar
-                tileContent={tileContentGenerator}
+                tileContent={generateTileContent}
                 calendarType="US"
                 onViewChange={updateDateRange}
                 onActiveStartDateChange={updateDateRange}

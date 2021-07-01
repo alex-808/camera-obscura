@@ -7,7 +7,6 @@ const Linegraph = function ({ dateRange, currentTracks }) {
     const [datasets, setDatasets] = useState([]);
 
     const generateDatasets = function (tracks, dates) {
-        let energyData = [];
         const datasets = {
             acousticness: [],
             danceability: [],
@@ -22,26 +21,46 @@ const Linegraph = function ({ dateRange, currentTracks }) {
             timeSignature: [],
             valence: [],
         };
-        for (let track of tracks) {
-            console.log(track);
-        }
-
-        // console.log(dates[0]);
 
         for (let i = 0; i < dates.length; i++) {
             for (let track of tracks) {
                 let trackDate = new Date(track.added_at);
                 if (dateUtils.isSameDay(trackDate, dates[i])) {
-                    energyData.push(track.analysis_features.energy);
+                    let {
+                        energy,
+                        acousticness,
+                        danceability,
+                        instrumentalness,
+                        key,
+                        liveness,
+                        loudness,
+                        mode,
+                        speechiness,
+                        tempo,
+                        timeSignature,
+                        valence,
+                    } = track.analysis_features;
+                    datasets.energy.push(energy);
+                    datasets.acousticness.push(acousticness);
+                    datasets.danceability.push(danceability);
+                    datasets.instrumentalness.push(instrumentalness);
+                    datasets.key.push(key);
+                    datasets.liveness.push(liveness);
+                    datasets.loudness.push(loudness);
+                    datasets.mode.push(mode);
+                    datasets.speechiness.push(speechiness);
+                    datasets.tempo.push(tempo);
+                    datasets.timeSignature.push(timeSignature);
+                    datasets.valence.push(valence);
                 }
             }
-            if (energyData.length === i) {
-                energyData.push(null);
+            for (let [label, array] of Object.entries(datasets)) {
+                if (array.length === i) array.push(null);
             }
         }
         // for every day (label), check if the track's day is the same, if it's not, write null to that dataset, else write the values
         // we need an array of datasets
-        return { energy: energyData };
+        return datasets;
     };
 
     useEffect(() => {
@@ -61,9 +80,48 @@ const Linegraph = function ({ dateRange, currentTracks }) {
         labels: labels,
         datasets: [
             {
-                // label for this dataset
                 label: 'energy',
                 data: datasets.energy,
+            },
+            {
+                label: 'acousticness',
+                data: datasets.acousticness,
+            },
+            {
+                label: 'instrumentalness',
+                data: datasets.instrumentalness,
+            },
+            // {
+            //     label: 'key',
+            //     data: datasets.key,
+            // },
+            {
+                label: 'liveness',
+                data: datasets.liveness,
+            },
+            // {
+            //     label: 'loudness',
+            //     data: datasets.loudness,
+            // },
+            {
+                label: 'mode',
+                data: datasets.mode,
+            },
+            {
+                label: 'speechiness',
+                data: datasets.speechiness,
+            },
+            // {
+            //     label: 'tempo',
+            //     data: datasets.tempo,
+            // },
+            // {
+            //     label: 'timeSignature',
+            //     data: datasets.timeSignature,
+            // },
+            {
+                label: 'valence',
+                data: datasets.valence,
             },
         ],
     };
