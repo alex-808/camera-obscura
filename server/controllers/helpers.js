@@ -6,10 +6,13 @@ const sortTracks = function (tracks) {
     const map = new Map();
     // todo Figure out a different schema to return track data in
     for (let trackInfo of tracks) {
-        map.set(trackInfo.added_at, trackInfo);
+        let utcDate = new Date(trackInfo.added_at).toUTCString();
+        trackInfo.added_at = utcDate;
+        map.set(utcDate, trackInfo);
     }
     const sorted = new Map([...map].sort((a, b) => a - b));
     const sortedObj = Object.fromEntries(sorted);
+    console.log(sortedObj);
     return sortedObj;
 };
 
