@@ -28,7 +28,9 @@ const Explorer = function ({ trackData }) {
                     tracks.push(trackInfo);
                 }
             }
-            return tracks.map((trackInfo) => <p>{trackInfo.track.name}</p>);
+            return tracks.map((trackInfo) => (
+                <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
+            ));
         }
         if (view === 'year') {
             const tracks = [];
