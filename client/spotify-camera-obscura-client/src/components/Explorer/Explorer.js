@@ -2,10 +2,15 @@ import { useState, React, useEffect } from 'react';
 import { Calendar } from 'react-calendar';
 import Linegraph from '../Linegraph/Linegraph';
 import 'react-calendar/dist/Calendar.css';
+import useStyles from './styles';
 import * as dates from '../../utils/dates';
 
 const Explorer = function ({ trackData }) {
-    const [currentDateRange, setCurrentDateRange] = useState(getDateRange());
+    const classes = useStyles();
+    const defaultDate = { activeStartDate: new Date(), view: 'month' };
+    const [currentDateRange, setCurrentDateRange] = useState(
+        getDateRange(defaultDate)
+    );
     const [currentTracks, setCurrentTracks] = useState(
         getTracksInRange(trackData)
     );
@@ -38,19 +43,20 @@ const Explorer = function ({ trackData }) {
         }
     };
 
-    function getDateRange(props) {
-        let startDate = !props ? new Date() : props.activeStartDate;
+    function getDateRange({ activeStartDate, view }) {
+        let startDate = !activeStartDate ? new Date() : activeStartDate;
+        console.log(startDate);
         let range;
-        if (props) {
-            if (props.view === 'month') {
-                const currentMonth = props.activeStartDate.getMonth();
+        if (view) {
+            if (view === 'month') {
+                const currentMonth = activeStartDate.getMonth();
                 const currentYear = startDate.getFullYear();
                 range = [
                     new Date(currentYear, currentMonth),
                     new Date(currentYear, currentMonth + 1),
                 ];
             }
-            if (props.view === 'year') {
+            if (view === 'year') {
                 const currentYear = startDate.getFullYear();
                 range = [
                     new Date(currentYear, 0),
@@ -72,7 +78,8 @@ const Explorer = function ({ trackData }) {
 
     function updateDateRange(props) {
         // todo make this generic to also update currentTracks
-        const range = getDateRange(props);
+        const date = props ? props : defaultDate;
+        const range = getDateRange(date);
         setCurrentDateRange(range);
     }
 
@@ -94,6 +101,7 @@ const Explorer = function ({ trackData }) {
         <>
             <div>Explorer</div>
             <Calendar
+                className={classes.myClass}
                 tileContent={generateTileContent}
                 calendarType="US"
                 onViewChange={updateDateRange}

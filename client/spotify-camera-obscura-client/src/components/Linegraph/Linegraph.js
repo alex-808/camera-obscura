@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import * as dateUtils from '../../utils/dates';
 import { randomColor } from '../../utils/charts';
+import { DateTime } from 'luxon';
 
 const Linegraph = function ({ dateRange, currentTracks }) {
     const [labels, setLabels] = useState(0);
@@ -55,7 +56,7 @@ const Linegraph = function ({ dateRange, currentTracks }) {
                     datasets.valence.push(valence);
                 }
             }
-            for (let [label, array] of Object.entries(datasets)) {
+            for (let [, array] of Object.entries(datasets)) {
                 if (array.length === i) array.push(null);
             }
         }
@@ -65,15 +66,15 @@ const Linegraph = function ({ dateRange, currentTracks }) {
     };
 
     useEffect(() => {
-        console.log('Date range:', dateRange);
-        console.log('Current tracks', currentTracks);
+        // console.log('Date range:', dateRange);
+        // console.log('Current tracks', currentTracks);
         const days = dateUtils.getDaysInRange(dateRange[0], dateRange[1]);
         setLabels(days);
     }, [dateRange, currentTracks]);
 
     useEffect(() => {
         const updatedDatasets = generateDatasets(currentTracks, labels);
-        console.log(updatedDatasets);
+        // console.log(updatedDatasets);
         setDatasets(updatedDatasets);
     }, [labels]);
 
