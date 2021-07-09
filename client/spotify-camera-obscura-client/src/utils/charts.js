@@ -16,4 +16,19 @@ class Dataset {
     }
 }
 
-export { randomColor, Dataset };
+const analysisFeatures = [
+    'energy',
+    'acousticness',
+    'danceability',
+    'instrumentalness',
+    'key',
+    'liveness',
+    'loudness',
+    'mode',
+    'speechiness',
+    'tempo',
+    'timeSignature',
+    'valence',
+];
+
+export { randomColor, Dataset, analysisFeatures };
