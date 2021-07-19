@@ -20,29 +20,21 @@ const Explorer = function ({ trackData }) {
     }, [currentDateRange]);
 
     const generateTileContent = function ({ activeStartDate, date, view }) {
-        if (view === 'month') {
-            const tracks = [];
-            for (let [trackDate, trackInfo] of Object.entries(trackData)) {
-                trackDate = new Date(trackDate);
+        const tracks = [];
+        for (let [trackDate, trackInfo] of Object.entries(trackData)) {
+            trackDate = new Date(trackDate);
+            if (view === 'month') {
                 if (dates.isSameDay(date, trackDate)) {
                     tracks.push(trackInfo);
                 }
             }
-            return tracks.map((trackInfo) => (
-                <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
-            ));
-        }
-        if (view === 'year') {
-            const tracks = [];
-
-            for (let [trackDate, trackInfo] of Object.entries(trackData)) {
-                trackDate = new Date(trackDate);
+            if (view === 'year') {
                 if (dates.isSameMonth(date, trackDate)) {
                     tracks.push(trackInfo);
                 }
             }
-            return tracks.map((trackInfo) => <p>{trackInfo.track.name}</p>);
         }
+        return tracks.map((trackInfo) => <p>{trackInfo.track.name}</p>);
     };
 
     function getDateRange({ activeStartDate, view }) {
