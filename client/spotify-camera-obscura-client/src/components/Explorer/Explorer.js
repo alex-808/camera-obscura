@@ -4,22 +4,34 @@ import Linegraph from '../Linegraph/Linegraph';
 import 'react-calendar/dist/Calendar.css';
 import useStyles from './styles';
 import * as dates from '../../utils/dates';
+import { analysisFeatures } from '../../utils/charts';
 
 const Explorer = function ({ trackData }) {
     const classes = useStyles();
     const defaultDate = { activeStartDate: new Date(), view: 'month' };
+
     const [currentDateRange, setCurrentDateRange] = useState(
         getDateRange(defaultDate)
     );
     const [currentTracks, setCurrentTracks] = useState(
-        getTracksInRange(trackData)
+        getTracksInRange(currentDateRange, trackData)
     );
 
+    const [graphLabels, setGraphLabels] = useState([]);
+    const [graphDatasets, setGraphDatasets] = useState({ datasets: {} });
+
     useEffect(() => {
-        setCurrentTracks(getTracksInRange(trackData));
+        setCurrentTracks(getTracksInRange(currentDateRange, trackData));
+        const { labels, datasets } = createGraphData(
+            currentDateRange,
+            trackData
+        );
+        console.log({ labels });
+        setGraphLabels(labels);
+        setGraphDatasets(datasets);
     }, [currentDateRange]);
 
-    const generateTileContent = function ({ activeStartDate, date, view }) {
+    const generateTileContent = function ({ date, view }) {
         const tracks = [];
         for (let [trackDate, trackInfo] of Object.entries(trackData)) {
             trackDate = new Date(trackDate);
@@ -39,19 +51,17 @@ const Explorer = function ({ trackData }) {
 
     function getDateRange({ activeStartDate, view }) {
         let startDate = !activeStartDate ? new Date() : activeStartDate;
-        console.log(startDate);
+        const currentMonth = startDate.getMonth();
+        const currentYear = startDate.getFullYear();
         let range;
         if (view) {
             if (view === 'month') {
-                const currentMonth = activeStartDate.getMonth();
-                const currentYear = startDate.getFullYear();
                 range = [
                     new Date(currentYear, currentMonth),
                     new Date(currentYear, currentMonth + 1),
                 ];
             }
             if (view === 'year') {
-                const currentYear = startDate.getFullYear();
                 range = [
                     new Date(currentYear, 0),
                     new Date(currentYear + 1, 0),
@@ -59,14 +69,11 @@ const Explorer = function ({ trackData }) {
             }
             // todo Add decade and century views
         } else {
-            const currentMonth = startDate.getMonth();
-            const currentYear = startDate.getFullYear();
             range = [
                 new Date(currentYear, currentMonth),
                 new Date(currentYear, currentMonth + 1),
             ];
         }
-
         return range;
     }
 
@@ -77,13 +84,13 @@ const Explorer = function ({ trackData }) {
         setCurrentDateRange(range);
     }
 
-    function getTracksInRange(tracks) {
+    function getTracksInRange(dateRange, tracks) {
         const tracksInRange = [];
         for (let [trackDate, trackInfo] of Object.entries(tracks)) {
             trackDate = new Date(trackDate);
             if (
-                trackDate > currentDateRange[0] &&
-                trackDate < currentDateRange[currentDateRange.length - 1]
+                trackDate > dateRange[0] &&
+                trackDate < dateRange[dateRange.length - 1]
             ) {
                 tracksInRange.push(trackInfo);
             }
@@ -91,6 +98,40 @@ const Explorer = function ({ trackData }) {
 
         return tracksInRange;
     }
+
+    function createGraphData(dateRange, trackData) {
+        const days = dates.getDaysInRange(dateRange[0], dateRange[1]);
+        //todo Replace this with current tracks to make it more modular
+        const tracks = getTracksInRange(dateRange, trackData);
+
+        const datasets = createEmptyDataSets(analysisFeatures);
+
+        for (let i = 0; i < days.length; i++) {
+            for (let track of tracks) {
+                let trackDate = new Date(track.added_at);
+                if (dates.isSameDay(trackDate, days[i])) {
+                    for (let [label, dataset] of Object.entries(datasets)) {
+                        dataset.push(track.analysis_features[`${label}`]);
+                    }
+                }
+            }
+            for (let [, array] of Object.entries(datasets)) {
+                if (array.length === i) array.push(null);
+            }
+        }
+        // for every day (label), check if the track's day is the same, if it's not, write null to that dataset, else write the values
+        // we need an array of datasets
+        return { labels: days, datasets: datasets };
+    }
+
+    const createEmptyDataSets = function (labels) {
+        const datasets = {};
+        for (let label of labels) {
+            datasets[label] = [];
+        }
+        return datasets;
+    };
+
     return (
         <>
             <div>Explorer</div>
@@ -101,11 +142,7 @@ const Explorer = function ({ trackData }) {
                 onViewChange={updateDateRange}
                 onActiveStartDateChange={updateDateRange}
             />
-            {/* Get start and end dates for the particular calendar view and pass all that data to linegraph */}
-            <Linegraph
-                dateRange={currentDateRange}
-                currentTracks={currentTracks}
-            />
+            <Linegraph labels={graphLabels} datasets={graphDatasets} />
         </>
     );
 };
