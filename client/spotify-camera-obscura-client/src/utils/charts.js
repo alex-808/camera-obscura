@@ -21,13 +21,13 @@ const analysisFeatures = [
     'acousticness',
     'danceability',
     'instrumentalness',
-    'key',
+    // 'key',
     'liveness',
-    'loudness',
+    // 'loudness',
     'mode',
     'speechiness',
-    'tempo',
-    'timeSignature',
+    // 'tempo',
+    // 'timeSignature',
     'valence',
 ];
 
