@@ -1,6 +1,6 @@
 import { useState, React, useEffect } from 'react';
 import { Calendar } from 'react-calendar';
-import Linegraph from '../Linegraph/Linegraph';
+import Linegraph from '../Linegraph/Linegraph.js';
 import 'react-calendar/dist/Calendar.css';
 import useStyles from './styles';
 import * as dates from '../../utils/dates';
@@ -8,28 +8,37 @@ import { analysisFeatures } from '../../utils/charts';
 
 const Explorer = function ({ trackData }) {
     const classes = useStyles();
-    const defaultDate = { activeStartDate: new Date(), view: 'month' };
 
+    const defaultDate = { activeStartDate: new Date(), view: 'month' };
     const [currentDateRange, setCurrentDateRange] = useState(
         getDateRange(defaultDate)
     );
     const [currentTracks, setCurrentTracks] = useState(
         getTracksInRange(currentDateRange, trackData)
     );
-
     const [graphLabels, setGraphLabels] = useState([]);
     const [graphDatasets, setGraphDatasets] = useState({ datasets: {} });
 
+    function updateDateRange(props) {
+        // todo make this generic to also update currentTracks
+        const date = props ? props : defaultDate;
+        const range = getDateRange(date);
+        setCurrentDateRange(range);
+    }
+
     useEffect(() => {
-        setCurrentTracks(getTracksInRange(currentDateRange, trackData));
+        const tracks = getTracksInRange(currentDateRange, trackData);
+        setCurrentTracks(tracks);
+    }, [currentDateRange, trackData]);
+
+    useEffect(() => {
         const { labels, datasets } = createGraphData(
             currentDateRange,
-            trackData
+            currentTracks
         );
-        console.log({ labels });
         setGraphLabels(labels);
         setGraphDatasets(datasets);
-    }, [currentDateRange]);
+    }, [currentTracks]);
 
     const generateTileContent = function ({ date, view }) {
         const tracks = [];
@@ -46,7 +55,9 @@ const Explorer = function ({ trackData }) {
                 }
             }
         }
-        return tracks.map((trackInfo) => <p>{trackInfo.track.name}</p>);
+        return tracks.map((trackInfo) => (
+            <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
+        ));
     };
 
     function getDateRange({ activeStartDate, view }) {
@@ -77,13 +88,6 @@ const Explorer = function ({ trackData }) {
         return range;
     }
 
-    function updateDateRange(props) {
-        // todo make this generic to also update currentTracks
-        const date = props ? props : defaultDate;
-        const range = getDateRange(date);
-        setCurrentDateRange(range);
-    }
-
     function getTracksInRange(dateRange, tracks) {
         const tracksInRange = [];
         for (let [trackDate, trackInfo] of Object.entries(tracks)) {
@@ -99,11 +103,8 @@ const Explorer = function ({ trackData }) {
         return tracksInRange;
     }
 
-    function createGraphData(dateRange, trackData) {
+    function createGraphData(dateRange, tracks) {
         const days = dates.getDaysInRange(dateRange[0], dateRange[1]);
-        //todo Replace this with current tracks to make it more modular
-        const tracks = getTracksInRange(dateRange, trackData);
-
         const datasets = createEmptyDataSets(analysisFeatures);
 
         for (let i = 0; i < days.length; i++) {
@@ -119,8 +120,6 @@ const Explorer = function ({ trackData }) {
                 if (array.length === i) array.push(null);
             }
         }
-        // for every day (label), check if the track's day is the same, if it's not, write null to that dataset, else write the values
-        // we need an array of datasets
         return { labels: days, datasets: datasets };
     }
 
