@@ -1,4 +1,6 @@
 const isSameDay = function (date1, date2) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
     return (
         date1.getFullYear() === date2.getFullYear() &&
         date1.getMonth() === date2.getMonth() &&
@@ -7,6 +9,8 @@ const isSameDay = function (date1, date2) {
 };
 
 const isSameMonth = function (date1, date2) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
     return (
         date1.getFullYear() === date2.getFullYear() &&
         date1.getMonth() === date2.getMonth()
@@ -14,10 +18,14 @@ const isSameMonth = function (date1, date2) {
 };
 
 const isSameYear = function (date1, date2) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
     return date1.getFullYear() === date2.getFullYear();
 };
 
 const getDaysInRange = function (startDate, endDate) {
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
     const days = [];
     let currentDate = startDate;
     while (currentDate < endDate) {
