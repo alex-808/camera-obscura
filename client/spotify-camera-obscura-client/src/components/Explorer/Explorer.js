@@ -19,11 +19,13 @@ const Explorer = function ({ trackData }) {
     const [graphLabels, setGraphLabels] = useState([]);
     const [graphDatasets, setGraphDatasets] = useState({ datasets: {} });
 
+    const [currentView, setCurrentView] = useState(defaultDate.view);
+
     function updateDateRange(props) {
-        // todo make this generic to also update currentTracks
         const date = props ? props : defaultDate;
         const range = getDateRange(date);
         setCurrentDateRange(range);
+        setCurrentView(props.view);
     }
 
     useEffect(() => {
@@ -34,7 +36,8 @@ const Explorer = function ({ trackData }) {
     useEffect(() => {
         const { labels, datasets } = createGraphData(
             currentDateRange,
-            currentTracks
+            currentTracks,
+            currentView
         );
         setGraphLabels(labels);
         setGraphDatasets(datasets);
@@ -42,17 +45,11 @@ const Explorer = function ({ trackData }) {
 
     const generateTileContent = function ({ date, view }) {
         const tracks = [];
+        const [isSameTimePeriod] = dates.getViewsMethods(view);
         for (let [trackDate, trackInfo] of Object.entries(trackData)) {
             trackDate = new Date(trackDate);
-            if (view === 'month') {
-                if (dates.isSameDay(date, trackDate)) {
-                    tracks.push(trackInfo);
-                }
-            }
-            if (view === 'year') {
-                if (dates.isSameMonth(date, trackDate)) {
-                    tracks.push(trackInfo);
-                }
+            if (isSameTimePeriod(date, trackDate)) {
+                tracks.push(trackInfo);
             }
         }
         return tracks.map((trackInfo) => (
@@ -76,6 +73,12 @@ const Explorer = function ({ trackData }) {
                 range = [
                     new Date(currentYear, 0),
                     new Date(currentYear + 1, 0),
+                ];
+            }
+            if (view === 'decade') {
+                range = [
+                    new Date(currentYear, 0),
+                    new Date(currentYear + 10, 0),
                 ];
             }
             // todo Add decade and century views
@@ -103,19 +106,20 @@ const Explorer = function ({ trackData }) {
         return tracksInRange;
     }
 
-    function createGraphData(dateRange, tracks) {
-        const days = dates.getDaysInRange(dateRange[0], dateRange[1]);
+    function createGraphData(dateRange, tracks, view) {
+        const [isSameTimePeriod, getDateUnitsInRange] =
+            dates.getViewsMethods(view);
+        const dateUnits = getDateUnitsInRange(dateRange[0], dateRange[1]);
         const datasets = createEmptyDataSets(analysisFeatures);
 
         tracks = sanitizeTrackData(tracks);
-        const bundle = bundleConcurrentTracks(tracks);
+        const bundle = bundleConcurrentTracks(tracks, view);
 
         const averages = averageConcurrentTracks(bundle) || [];
-        console.log(averages);
-        for (let i = 0; i < days.length; i++) {
+        for (let i = 0; i < dateUnits.length; i++) {
             for (let track of averages) {
                 let trackDate = new Date(track.date);
-                if (dates.isSameDay(trackDate, days[i])) {
+                if (isSameTimePeriod(trackDate, dateUnits[i])) {
                     for (let [label, dataset] of Object.entries(datasets)) {
                         dataset.push(track.analysisFeatures[`${label}`]);
                     }
@@ -125,16 +129,17 @@ const Explorer = function ({ trackData }) {
                 if (array.length === i) array.push(null);
             }
         }
-        return { labels: days, datasets: datasets };
+        return { labels: dateUnits, datasets: datasets };
     }
 
-    const bundleConcurrentTracks = function (tracks) {
+    const bundleConcurrentTracks = function (tracks, view) {
         if (!tracks.length) return;
+        const [isSameTimePeriod] = dates.getViewsMethods(view);
         const bundles = [];
         bundles.push([tracks[0]]);
         for (let i = 1; i < tracks.length; i++) {
             if (
-                dates.isSameDay(
+                isSameTimePeriod(
                     tracks[i].date,
                     bundles[bundles.length - 1][0].date
                 )
@@ -214,6 +219,10 @@ const Explorer = function ({ trackData }) {
         return datasets;
     };
 
+    const onChange = function (returnVal) {
+        console.log(returnVal);
+    };
+
     return (
         <>
             <div>Explorer</div>
@@ -223,6 +232,9 @@ const Explorer = function ({ trackData }) {
                 calendarType="US"
                 onViewChange={updateDateRange}
                 onActiveStartDateChange={updateDateRange}
+                onChange={onChange}
+                // returnValue={'range'}
+                minDetail={'decade'}
             />
             <Linegraph labels={graphLabels} datasets={graphDatasets} />
         </>
