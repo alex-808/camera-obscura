@@ -107,12 +107,17 @@ const Explorer = function ({ trackData }) {
         const days = dates.getDaysInRange(dateRange[0], dateRange[1]);
         const datasets = createEmptyDataSets(analysisFeatures);
 
+        tracks = sanitizeTrackData(tracks);
+        const bundle = bundleConcurrentTracks(tracks);
+
+        const averages = averageConcurrentTracks(bundle) || [];
+        console.log(averages);
         for (let i = 0; i < days.length; i++) {
-            for (let track of tracks) {
-                let trackDate = new Date(track.added_at);
+            for (let track of averages) {
+                let trackDate = new Date(track.date);
                 if (dates.isSameDay(trackDate, days[i])) {
                     for (let [label, dataset] of Object.entries(datasets)) {
-                        dataset.push(track.analysis_features[`${label}`]);
+                        dataset.push(track.analysisFeatures[`${label}`]);
                     }
                 }
             }
@@ -121,6 +126,84 @@ const Explorer = function ({ trackData }) {
             }
         }
         return { labels: days, datasets: datasets };
+    }
+
+    const bundleConcurrentTracks = function (tracks) {
+        if (!tracks.length) return;
+        const bundles = [];
+        bundles.push([tracks[0]]);
+        for (let i = 1; i < tracks.length; i++) {
+            if (
+                dates.isSameDay(
+                    tracks[i].date,
+                    bundles[bundles.length - 1][0].date
+                )
+            ) {
+                bundles[bundles.length - 1].push(tracks[i]);
+            } else {
+                bundles.push([tracks[i]]);
+            }
+        }
+
+        return bundles;
+    };
+
+    const averageConcurrentTracks = function (bundledTracks) {
+        if (!bundledTracks) return;
+        const averages = [];
+        for (let bundle of bundledTracks) {
+            if (bundle.length > 1) {
+                let avg = averageBundleData(bundle);
+
+                // averages.push([bundle[0].date, avg]);
+                averages.push(new AnalysisFeatures(bundle[0].date, avg));
+            } else {
+                averages.push(bundle[0]);
+            }
+        }
+
+        return averages;
+    };
+
+    function averageBundleData(bundle) {
+        let sums = {};
+        for (let item of bundle) {
+            for (let [label, value] of Object.entries(item.analysisFeatures)) {
+                if (analysisFeatures.includes(label)) {
+                    if (!sums[`${label}`]) {
+                        sums[`${label}`] = value;
+                    } else {
+                        sums[`${label}`] += value;
+                    }
+                }
+            }
+        }
+        let avgs = {};
+        for (let [label, value] of Object.entries(sums)) {
+            avgs[`${label}`] = value / bundle.length;
+        }
+
+        return avgs;
+    }
+
+    function sanitizeTrackData(tracks) {
+        const analysisData = [];
+        for (let trackInfo of tracks) {
+            const data = new AnalysisFeatures(
+                trackInfo.added_at,
+                trackInfo.analysis_features
+            );
+            analysisData.push(data);
+        }
+
+        return analysisData;
+    }
+
+    class AnalysisFeatures {
+        constructor(date, analysisFeatures) {
+            this.date = date;
+            this.analysisFeatures = analysisFeatures;
+        }
     }
 
     const createEmptyDataSets = function (labels) {

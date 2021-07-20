@@ -2,7 +2,7 @@ import { Line } from 'react-chartjs-2';
 import { randomColor } from '../../utils/charts';
 
 const Linegraph = function ({ labels, datasets }) {
-    // todo make creation of this object dynamic
+    // todo maybe port this out of Linegraph actually, it's unneccessary
 
     const buildOutDatasets = function (datasets) {
         const finalizedDatasets = [];
@@ -21,7 +21,7 @@ const Linegraph = function ({ labels, datasets }) {
     };
 
     datasets = buildOutDatasets(datasets);
-    console.log(datasets);
+    // console.log(datasets);
 
     const data = {
         labels: labels,
