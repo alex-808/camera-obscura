@@ -23,7 +23,7 @@ const isSameYear = function (date1, date2) {
     return date1.getFullYear() === date2.getFullYear();
 };
 
-const selectDateChecker = function (view) {
+const getViewsMethods = function (view) {
     if (view === 'month') return [isSameDay, getDaysInRange];
     if (view === 'year') return [isSameMonth, getMonthsInRange];
     if (view === 'decade') return [isSameYear, getYearsInRange];
@@ -77,10 +77,4 @@ const getYearsInRange = function (startDate, endDate) {
     return months;
 };
 
-export {
-    isSameDay,
-    isSameMonth,
-    isSameYear,
-    getDaysInRange,
-    selectDateChecker,
-};
+export { isSameDay, isSameMonth, isSameYear, getDaysInRange, getViewsMethods };
