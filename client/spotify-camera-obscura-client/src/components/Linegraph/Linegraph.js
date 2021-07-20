@@ -1,5 +1,6 @@
 import { Line } from 'react-chartjs-2';
 import { randomColor } from '../../utils/charts';
+import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ labels, datasets }) {
     // todo maybe port this out of Linegraph actually, it's unneccessary
@@ -21,7 +22,6 @@ const Linegraph = function ({ labels, datasets }) {
     };
 
     datasets = buildOutDatasets(datasets);
-    // console.log(datasets);
 
     const data = {
         labels: labels,
@@ -29,6 +29,15 @@ const Linegraph = function ({ labels, datasets }) {
     };
 
     const options = {
+        animations: {
+            tension: {
+                duration: 1000,
+                easing: 'easeOutQuart',
+                from: 0.4,
+                to: 0.5,
+                loop: true,
+            },
+        },
         scales: {
             yAxes: [
                 {
@@ -37,6 +46,9 @@ const Linegraph = function ({ labels, datasets }) {
                     },
                 },
             ],
+            xAxes: {
+                type: 'time',
+            },
         },
         spanGaps: true,
     };
