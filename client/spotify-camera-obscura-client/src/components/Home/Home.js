@@ -1,4 +1,4 @@
-import PlaylistPicker from '../PlaylistPicker/Playlists';
+import PlaylistPicker from '../PlaylistPicker/PlaylistPicker';
 import Explorer from '../Explorer/Explorer';
 import { useState } from 'react';
 import { testTracks } from '../../testData/testData';

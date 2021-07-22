@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as api from '../../api/requests.js';
-import Playlist from './PlaylistPicker/PlaylistPicker.js';
+import Playlist from './Playlist/Playlist.js';
+import placeholder from '../../imgs/logo192.png';
 
 function PlaylistPicker({ setTrackData }) {
     const [playlists, setPlaylists] = useState(0);
@@ -35,6 +36,11 @@ function PlaylistPicker({ setTrackData }) {
         console.log(selectedPlaylists);
     };
 
+    const getPlaylistImage = function (playlist) {
+        const [image] = playlist.images.filter((el, i) => i === 0);
+        return image ? image.url : placeholder;
+    };
+
     if (!playlists) {
         return <div>No state</div>;
     } else {
@@ -47,6 +53,7 @@ function PlaylistPicker({ setTrackData }) {
                         playlist={playlist}
                         handleClick={handleClick}
                         key={playlist.id}
+                        img={getPlaylistImage(playlist)}
                     />
                 ))}
             </div>
