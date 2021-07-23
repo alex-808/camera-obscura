@@ -2,7 +2,7 @@ const randomColor = function (r, g, b, a) {
     const red = r || Math.floor(Math.random() * 256);
     const green = g || Math.floor(Math.random() * 256);
     const blue = b || Math.floor(Math.random() * 256);
-    const alpha = a || Math.random();
+    const alpha = a || 1;
     return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 };
 

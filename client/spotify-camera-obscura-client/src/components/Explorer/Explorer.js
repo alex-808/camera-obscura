@@ -36,7 +36,6 @@ const Explorer = function ({ trackData }) {
 
     useEffect(() => {
         const { labels, datasets } = createGraphData(
-            currentDateRange,
             currentTracks,
             currentView
         );
@@ -105,33 +104,23 @@ const Explorer = function ({ trackData }) {
         return tracksInRange;
     }
 
-    function createGraphData(dateRange, tracks, view) {
-        const [isSameTimePeriod, getDateUnitsInRange] =
-            dates.getViewsMethods(view);
-        const dateUnits = getDateUnitsInRange(dateRange[0], dateRange[1]);
+    function createGraphData(tracks, view) {
         const datasets = createEmptyDataSets(analysisFeatures);
 
         tracks = sanitizeTrackData(tracks);
         const bundle = bundleConcurrentTracks(tracks, view);
 
         const averages = averageConcurrentTracks(bundle) || [];
-        for (let i = 0; i < dateUnits.length; i++) {
-            for (let track of averages) {
-                let trackDate = new Date(track.date);
-                if (isSameTimePeriod(trackDate, dateUnits[i])) {
-                    for (let [label, dataset] of Object.entries(datasets)) {
-                        dataset.push({
-                            date: trackDate,
-                            value: track.analysisFeatures[`${label}`],
-                        });
-                    }
-                }
+        for (let track of averages) {
+            let trackDate = new Date(track.date);
+            for (let [label, dataset] of Object.entries(datasets)) {
+                dataset.push({
+                    date: trackDate,
+                    value: track.analysisFeatures[`${label}`],
+                });
             }
-            // for (let [, array] of Object.entries(datasets)) {
-            //     if (array.length === i) array.push(null);
-            // }
         }
-        return { labels: dateUnits, datasets: datasets };
+        return { datasets: datasets };
     }
 
     const bundleConcurrentTracks = function (tracks, view) {
@@ -158,17 +147,20 @@ const Explorer = function ({ trackData }) {
         if (!bundledTracks) return;
         const averages = [];
         for (let bundle of bundledTracks) {
-            console.log({ bundle });
+            const [year, month, day] = dates.getYearMonthDay(bundle[0].date);
             if (bundle.length > 1) {
                 let avg = averageBundleData(bundle);
-                const [year, month, day] = dates.getYearMonthDay(
-                    bundle[0].date
-                );
+
                 averages.push(
                     new AnalysisFeatures(new Date(year, month, day), avg)
                 );
             } else {
-                averages.push(bundle[0]);
+                averages.push(
+                    new AnalysisFeatures(
+                        new Date(year, month, day),
+                        bundle[0].analysisFeatures
+                    )
+                );
             }
         }
         return averages;

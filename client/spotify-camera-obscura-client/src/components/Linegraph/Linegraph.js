@@ -2,9 +2,8 @@ import { Line } from 'react-chartjs-2';
 import { randomColor } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
-const Linegraph = function ({ labels, datasets }) {
+const Linegraph = function ({ datasets }) {
     // todo maybe port this out of Linegraph actually, it's unneccessary
-    console.log(datasets);
     const buildOutDatasets = function (datasets) {
         const finalizedDatasets = [];
         for (let [label, data] of Object.entries(datasets)) {
@@ -18,7 +17,6 @@ const Linegraph = function ({ labels, datasets }) {
             };
             finalizedDatasets.push(dataset);
         }
-        console.log({ finalizedDatasets });
         return finalizedDatasets;
     };
 
