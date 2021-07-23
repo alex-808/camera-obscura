@@ -13,10 +13,7 @@ const Explorer = function ({ trackData }) {
     const [currentDateRange, setCurrentDateRange] = useState(
         getViewsDateRange(defaultDate)
     );
-    const [currentTracks, setCurrentTracks] = useState(
-        getTracksInRange(currentDateRange, trackData)
-    );
-    const [graphLabels, setGraphLabels] = useState([]);
+    const [currentTracks, setCurrentTracks] = useState();
     const [graphDatasets, setGraphDatasets] = useState({ datasets: {} });
 
     const [currentView, setCurrentView] = useState(defaultDate.view);
@@ -35,11 +32,7 @@ const Explorer = function ({ trackData }) {
     }, [currentDateRange, trackData]);
 
     useEffect(() => {
-        const { labels, datasets } = createGraphData(
-            currentTracks,
-            currentView
-        );
-        setGraphLabels(labels);
+        const { datasets } = createGraphData(currentTracks, currentView);
         setGraphDatasets(datasets);
     }, [currentTracks]);
 
@@ -105,12 +98,10 @@ const Explorer = function ({ trackData }) {
     }
 
     function createGraphData(tracks, view) {
+        if (!tracks) return { datasets: null };
         const datasets = createEmptyDataSets(analysisFeatures);
-
         tracks = sanitizeTrackData(tracks);
-        const bundle = bundleConcurrentTracks(tracks, view);
-
-        const averages = averageConcurrentTracks(bundle) || [];
+        const averages = averageConcurrentTracks(tracks, view) || [];
         for (let track of averages) {
             let trackDate = new Date(track.date);
             for (let [label, dataset] of Object.entries(datasets)) {
@@ -143,7 +134,8 @@ const Explorer = function ({ trackData }) {
         return bundles;
     };
 
-    const averageConcurrentTracks = function (bundledTracks) {
+    const averageConcurrentTracks = function (tracks, view) {
+        const bundledTracks = bundleConcurrentTracks(tracks, view);
         if (!bundledTracks) return;
         const averages = [];
         for (let bundle of bundledTracks) {
@@ -218,25 +210,28 @@ const Explorer = function ({ trackData }) {
     const onClick = (props) => {
         console.log(props);
     };
-
-    return (
-        <>
-            <div>Explorer</div>
-            <Calendar
-                className={classes.myClass}
-                tileContent={generateTileContent}
-                calendarType="US"
-                onViewChange={updateDateRange}
-                onActiveStartDateChange={updateDateRange}
-                onChange={onChange}
-                returnValue={'range'}
-                minDetail={'decade'}
-                onClick={onClick}
-                value={new Date()}
-            />
-            <Linegraph labels={graphLabels} datasets={graphDatasets} />
-        </>
-    );
+    if (graphDatasets) {
+        return (
+            <>
+                <div>Explorer</div>
+                <Calendar
+                    className={classes.myClass}
+                    tileContent={generateTileContent}
+                    calendarType="US"
+                    onViewChange={updateDateRange}
+                    onActiveStartDateChange={updateDateRange}
+                    onChange={onChange}
+                    returnValue={'range'}
+                    minDetail={'decade'}
+                    onClick={onClick}
+                    value={new Date()}
+                />
+                <Linegraph datasets={graphDatasets} />
+            </>
+        );
+    } else {
+        return <>Loading</>;
+    }
 };
 
 export default Explorer;

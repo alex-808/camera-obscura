@@ -107,10 +107,8 @@ const getYear = function (date) {
 };
 
 export {
-    isSameDay,
-    isSameMonth,
-    isSameYear,
     getDaysInRange,
     getViewsMethods,
     getYearMonthDay,
+    generateDateFormatter,
 };

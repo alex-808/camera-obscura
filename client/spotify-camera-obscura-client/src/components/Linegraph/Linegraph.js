@@ -3,6 +3,7 @@ import { randomColor } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ datasets }) {
+    console.log('rerender');
     // todo maybe port this out of Linegraph actually, it's unneccessary
     const buildOutDatasets = function (datasets) {
         const finalizedDatasets = [];
