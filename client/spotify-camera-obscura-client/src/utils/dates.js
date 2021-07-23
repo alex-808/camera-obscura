@@ -74,6 +74,14 @@ const getYearsInRange = function (startDate, endDate) {
     return months;
 };
 
+const generateDateFormatter = function (fn) {
+    return function (date) {
+        const dates = fn(date);
+        if (dates.length < 2) dates.push(0);
+        return new Date(...dates);
+    };
+};
+
 const getYearMonthDay = function (date) {
     date = new Date(date);
     const year = date.getFullYear();
