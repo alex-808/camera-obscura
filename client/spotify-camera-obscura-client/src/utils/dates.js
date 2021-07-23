@@ -23,10 +23,14 @@ const isSameYear = function (date1, date2) {
     return date1.getFullYear() === date2.getFullYear();
 };
 
+// todo I'd like to create a static class out of this:
+
 const getViewsMethods = function (view) {
-    if (view === 'month') return [isSameDay, getDaysInRange, getYearMonthDay];
-    if (view === 'year') return [isSameMonth, getMonthsInRange, getYearMonth];
-    if (view === 'decade') return [isSameYear, getYearsInRange, getYear];
+    if (view === 'month')
+        return [isSameDay, generateDateFormatter(getYearMonthDay)];
+    if (view === 'year')
+        return [isSameMonth, generateDateFormatter(getYearMonth)];
+    if (view === 'decade') return [isSameYear, generateDateFormatter(getYear)];
 };
 
 const getDaysInRange = function (startDate, endDate) {

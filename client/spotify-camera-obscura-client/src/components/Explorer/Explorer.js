@@ -136,22 +136,18 @@ const Explorer = function ({ trackData }) {
 
     const averageConcurrentTracks = function (tracks, view) {
         const bundledTracks = bundleConcurrentTracks(tracks, view);
+        const [_, dateFormatter] = dates.getViewsMethods(view);
         if (!bundledTracks) return;
         const averages = [];
         for (let bundle of bundledTracks) {
-            const [year, month, day] = dates.getYearMonthDay(bundle[0].date);
+            const date = dateFormatter(bundle[0].date);
             if (bundle.length > 1) {
                 let avg = averageBundleData(bundle);
 
-                averages.push(
-                    new AnalysisFeatures(new Date(year, month, day), avg)
-                );
+                averages.push(new AnalysisFeatures(date, avg));
             } else {
                 averages.push(
-                    new AnalysisFeatures(
-                        new Date(year, month, day),
-                        bundle[0].analysisFeatures
-                    )
+                    new AnalysisFeatures(date, bundle[0].analysisFeatures)
                 );
             }
         }
@@ -226,7 +222,7 @@ const Explorer = function ({ trackData }) {
                     onClick={onClick}
                     value={new Date()}
                 />
-                <Linegraph datasets={graphDatasets} />
+                <Linegraph datasets={graphDatasets} view={currentView} />
             </>
         );
     } else {
