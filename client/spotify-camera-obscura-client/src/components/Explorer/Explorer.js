@@ -1,7 +1,7 @@
 import { useState, React, useEffect } from 'react';
 import { Calendar } from 'react-calendar';
-import Linegraph from '../Linegraph/Linegraph.js';
 import 'react-calendar/dist/Calendar.css';
+import Linegraph from '../Linegraph/Linegraph.js';
 import useStyles from './styles';
 import * as dates from '../../utils/dates';
 import { analysisFeatures } from '../../utils/charts';
@@ -11,7 +11,7 @@ const Explorer = function ({ trackData }) {
 
     const defaultDate = { activeStartDate: new Date(), view: 'month' };
     const [currentDateRange, setCurrentDateRange] = useState(
-        getDateRange(defaultDate)
+        getViewsDateRange(defaultDate)
     );
     const [currentTracks, setCurrentTracks] = useState(
         getTracksInRange(currentDateRange, trackData)
@@ -22,8 +22,9 @@ const Explorer = function ({ trackData }) {
     const [currentView, setCurrentView] = useState(defaultDate.view);
 
     function updateDateRange(props) {
+        console.log(props);
         const date = props ? props : defaultDate;
-        const range = getDateRange(date);
+        const range = getViewsDateRange(date);
         setCurrentDateRange(range);
         setCurrentView(props.view);
     }
@@ -57,7 +58,7 @@ const Explorer = function ({ trackData }) {
         ));
     };
 
-    function getDateRange({ activeStartDate, view }) {
+    function getViewsDateRange({ activeStartDate, view }) {
         let startDate = !activeStartDate ? new Date() : activeStartDate;
         const currentMonth = startDate.getMonth();
         const currentYear = startDate.getFullYear();
@@ -81,7 +82,6 @@ const Explorer = function ({ trackData }) {
                     new Date(currentYear + 10, 0),
                 ];
             }
-            // todo Add decade and century views
         } else {
             range = [
                 new Date(currentYear, currentMonth),
@@ -192,16 +192,13 @@ const Explorer = function ({ trackData }) {
     }
 
     function sanitizeTrackData(tracks) {
-        const analysisData = [];
-        for (let trackInfo of tracks) {
-            const data = new AnalysisFeatures(
-                trackInfo.added_at,
-                trackInfo.analysis_features
-            );
-            analysisData.push(data);
-        }
-
-        return analysisData;
+        return tracks.map(
+            (trackInfo) =>
+                new AnalysisFeatures(
+                    trackInfo.added_at,
+                    trackInfo.analysis_features
+                )
+        );
     }
 
     class AnalysisFeatures {
@@ -223,6 +220,10 @@ const Explorer = function ({ trackData }) {
         console.log(returnVal);
     };
 
+    const onClick = (props) => {
+        console.log(props);
+    };
+
     return (
         <>
             <div>Explorer</div>
@@ -233,8 +234,10 @@ const Explorer = function ({ trackData }) {
                 onViewChange={updateDateRange}
                 onActiveStartDateChange={updateDateRange}
                 onChange={onChange}
-                // returnValue={'range'}
+                returnValue={'range'}
                 minDetail={'decade'}
+                onClick={onClick}
+                value={new Date()}
             />
             <Linegraph labels={graphLabels} datasets={graphDatasets} />
         </>

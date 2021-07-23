@@ -11,6 +11,7 @@ const Linegraph = function ({ labels, datasets }) {
             const dataset = {
                 label: label,
                 data: data,
+                // fill: true,
                 backgroundColor: randomColor(),
                 borderColor: randomColor(),
                 tension: 0.5,
@@ -28,15 +29,37 @@ const Linegraph = function ({ labels, datasets }) {
         datasets: datasets,
     };
 
+    //! This is an example of a alternative data structure we could use to trim the front/end of graphs
+    // const data = {
+    //     datasets: [
+    //         {
+    //             label: 'values',
+    //             data: [
+    //                 { date: '2015-12-25', value: 20 },
+    //                 { date: '2016-12-26', value: 10 },
+    //             ],
+    //         },
+    //     ],
+    // };
+
     const options = {
-        animations: {
-            tension: {
-                duration: 1000,
-                easing: 'easeOutQuart',
-                from: 0.4,
-                to: 0.5,
-                loop: true,
-            },
+        // animations: {
+        //     tension: {
+        //         duration: 1000,
+        //         easing: 'easeOutQuart',
+        //         from: 0.4,
+        //         to: 0.5,
+        //         loop: true,
+        //     },
+        // },
+        // parsing: {
+        //     xAxisKey: 'date',
+        //     yAxisKey: 'value',
+        // },
+        responsive: true,
+        interaction: {
+            intersect: false,
+            mode: 'index',
         },
         scales: {
             yAxes: [
