@@ -24,9 +24,9 @@ const isSameYear = function (date1, date2) {
 };
 
 const getViewsMethods = function (view) {
-    if (view === 'month') return [isSameDay, getDaysInRange];
-    if (view === 'year') return [isSameMonth, getMonthsInRange];
-    if (view === 'decade') return [isSameYear, getYearsInRange];
+    if (view === 'month') return [isSameDay, getDaysInRange, getYearMonthDay];
+    if (view === 'year') return [isSameMonth, getMonthsInRange, getYearMonth];
+    if (view === 'decade') return [isSameYear, getYearsInRange, getYear];
 };
 
 const getDaysInRange = function (startDate, endDate) {
@@ -36,9 +36,8 @@ const getDaysInRange = function (startDate, endDate) {
     let currentDate = startDate;
     while (currentDate < endDate) {
         days.push(currentDate);
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth();
-        const currentDay = currentDate.getUTCDate();
+        const [currentYear, currentMonth, currentDay] =
+            getYearMonthDay(currentDate);
         currentDate = new Date(currentYear, currentMonth, currentDay + 1);
     }
 
@@ -52,9 +51,8 @@ const getMonthsInRange = function (startDate, endDate) {
     let currentDate = startDate;
     while (currentDate < endDate) {
         months.push(currentDate);
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth();
-        const currentDay = currentDate.getUTCDate();
+        const [currentYear, currentMonth, currentDay] =
+            getYearMonthDay(currentDate);
         currentDate = new Date(currentYear, currentMonth + 1, currentDay);
     }
 
@@ -68,13 +66,43 @@ const getYearsInRange = function (startDate, endDate) {
     let currentDate = startDate;
     while (currentDate < endDate) {
         months.push(currentDate);
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth();
-        const currentDay = currentDate.getUTCDate();
+        const [currentYear, currentMonth, currentDay] =
+            getYearMonthDay(currentDate);
         currentDate = new Date(currentYear + 1, currentMonth, currentDay);
     }
 
     return months;
 };
 
-export { isSameDay, isSameMonth, isSameYear, getDaysInRange, getViewsMethods };
+const getYearMonthDay = function (date) {
+    date = new Date(date);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getUTCDate();
+
+    return [year, month, day];
+};
+
+const getYearMonth = function (date) {
+    date = new Date(date);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    return [year, month];
+};
+
+const getYear = function (date) {
+    date = new Date(date);
+    const year = date.getFullYear();
+
+    return [year];
+};
+
+export {
+    isSameDay,
+    isSameMonth,
+    isSameYear,
+    getDaysInRange,
+    getViewsMethods,
+    getYearMonthDay,
+};
