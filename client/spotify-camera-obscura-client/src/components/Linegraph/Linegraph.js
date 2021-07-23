@@ -4,7 +4,7 @@ import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ labels, datasets }) {
     // todo maybe port this out of Linegraph actually, it's unneccessary
-
+    console.log(datasets);
     const buildOutDatasets = function (datasets) {
         const finalizedDatasets = [];
         for (let [label, data] of Object.entries(datasets)) {
@@ -18,14 +18,14 @@ const Linegraph = function ({ labels, datasets }) {
             };
             finalizedDatasets.push(dataset);
         }
-
+        console.log({ finalizedDatasets });
         return finalizedDatasets;
     };
 
     datasets = buildOutDatasets(datasets);
 
     const data = {
-        labels: labels,
+        // labels: labels,
         datasets: datasets,
     };
 
@@ -34,10 +34,11 @@ const Linegraph = function ({ labels, datasets }) {
     //     datasets: [
     //         {
     //             label: 'values',
-    //             data: [
-    //                 { date: '2015-12-25', value: 20 },
-    //                 { date: '2016-12-26', value: 10 },
-    //             ],
+    //             data: [{ date: labels[0], value: 20 }],
+    //         },
+    //         {
+    //             label: 'values2',
+    //             data: [{ date: labels[0], value: 30 }],
     //         },
     //     ],
     // };
@@ -52,10 +53,10 @@ const Linegraph = function ({ labels, datasets }) {
         //         loop: true,
         //     },
         // },
-        // parsing: {
-        //     xAxisKey: 'date',
-        //     yAxisKey: 'value',
-        // },
+        parsing: {
+            xAxisKey: 'date',
+            yAxisKey: 'value',
+        },
         responsive: true,
         interaction: {
             intersect: false,
@@ -71,6 +72,9 @@ const Linegraph = function ({ labels, datasets }) {
             ],
             xAxes: {
                 type: 'time',
+                time: {
+                    tooltipFormat: 'DD',
+                },
             },
         },
         spanGaps: true,

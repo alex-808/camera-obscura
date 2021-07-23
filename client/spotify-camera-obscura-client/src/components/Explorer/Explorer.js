@@ -102,7 +102,6 @@ const Explorer = function ({ trackData }) {
                 tracksInRange.push(trackInfo);
             }
         }
-
         return tracksInRange;
     }
 
@@ -121,13 +120,16 @@ const Explorer = function ({ trackData }) {
                 let trackDate = new Date(track.date);
                 if (isSameTimePeriod(trackDate, dateUnits[i])) {
                     for (let [label, dataset] of Object.entries(datasets)) {
-                        dataset.push(track.analysisFeatures[`${label}`]);
+                        dataset.push({
+                            date: trackDate,
+                            value: track.analysisFeatures[`${label}`],
+                        });
                     }
                 }
             }
-            for (let [, array] of Object.entries(datasets)) {
-                if (array.length === i) array.push(null);
-            }
+            // for (let [, array] of Object.entries(datasets)) {
+            //     if (array.length === i) array.push(null);
+            // }
         }
         return { labels: dateUnits, datasets: datasets };
     }
@@ -149,7 +151,6 @@ const Explorer = function ({ trackData }) {
                 bundles.push([tracks[i]]);
             }
         }
-
         return bundles;
     };
 
@@ -157,16 +158,19 @@ const Explorer = function ({ trackData }) {
         if (!bundledTracks) return;
         const averages = [];
         for (let bundle of bundledTracks) {
+            console.log({ bundle });
             if (bundle.length > 1) {
                 let avg = averageBundleData(bundle);
-
-                // averages.push([bundle[0].date, avg]);
-                averages.push(new AnalysisFeatures(bundle[0].date, avg));
+                const [year, month, day] = dates.getYearMonthDay(
+                    bundle[0].date
+                );
+                averages.push(
+                    new AnalysisFeatures(new Date(year, month, day), avg)
+                );
             } else {
                 averages.push(bundle[0]);
             }
         }
-
         return averages;
     };
 
@@ -187,7 +191,6 @@ const Explorer = function ({ trackData }) {
         for (let [label, value] of Object.entries(sums)) {
             avgs[`${label}`] = value / bundle.length;
         }
-
         return avgs;
     }
 
