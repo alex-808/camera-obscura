@@ -1,9 +1,17 @@
+import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { randomColor } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
-const Linegraph = function ({ datasets }) {
+const Linegraph = function ({ datasets, view }) {
     console.log('rerender');
+
+    let defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
+
+    const [enabledFeatures, setEnabledFeatures] = useState(
+        defaultEnabledFeatures
+    );
+
     // todo maybe port this out of Linegraph actually, it's unneccessary
     const buildOutDatasets = function (datasets) {
         const finalizedDatasets = [];
@@ -12,6 +20,7 @@ const Linegraph = function ({ datasets }) {
                 label: label,
                 data: data,
                 // fill: true,
+                hidden: !enabledFeatures.includes(label),
                 backgroundColor: randomColor(),
                 borderColor: randomColor(),
                 tension: 0.5,
@@ -24,25 +33,61 @@ const Linegraph = function ({ datasets }) {
     datasets = buildOutDatasets(datasets);
 
     const data = {
-        // labels: labels,
         datasets: datasets,
     };
 
-    //! This is an example of a alternative data structure we could use to trim the front/end of graphs
-    // const data = {
-    //     datasets: [
-    //         {
-    //             label: 'values',
-    //             data: [{ date: labels[0], value: 20 }],
-    //         },
-    //         {
-    //             label: 'values2',
-    //             data: [{ date: labels[0], value: 30 }],
-    //         },
-    //     ],
-    // };
+    const setupOpts = function (view, opts) {
+        const viewTooltipFormats = {
+            month: {
+                tooltipFormat: 'DD',
+                tickUnit: 'day',
+            },
+            year: { tooltipFormat: 'MMM yy', tickUnit: 'month' },
+            decade: { tooltipFormat: 'yyyy', tickUnit: 'year' },
+        };
 
-    const options = {
+        opts.scales.xAxes.time.tooltipFormat =
+            viewTooltipFormats[`${view}`].tooltipFormat;
+        opts.scales.xAxes.time.unit = viewTooltipFormats[`${view}`].tickUnit;
+
+        return opts;
+    };
+
+    const onLegendHover = function (event, legendItem, legend) {
+        // console.log(event);
+        // console.log(legendItem);
+        // console.log(legend);
+    };
+
+    const onLegendClick = function (event, legendItem, legend) {
+        console.log(event);
+        console.log(legendItem);
+        console.log(legend);
+        const wasHidden = legendItem.hidden;
+        const legendItemLabel = legendItem.text;
+
+        if (wasHidden) {
+            setEnabledFeatures([...enabledFeatures, legendItemLabel]);
+        } else {
+            setEnabledFeatures(
+                enabledFeatures.filter((el) => el !== legendItemLabel)
+            );
+        }
+
+        const index = legendItem.datasetIndex;
+        const ci = legend.chart;
+        if (ci.isDatasetVisible(index)) {
+            ci.hide(index);
+            legendItem.hidden = true;
+        } else {
+            ci.show(index);
+            legendItem.hidden = false;
+        }
+    };
+
+    //todo put this in charts module when we're done
+
+    let options = {
         // animations: {
         //     tension: {
         //         duration: 1000,
@@ -72,14 +117,28 @@ const Linegraph = function ({ datasets }) {
             xAxes: {
                 type: 'time',
                 time: {
-                    tooltipFormat: 'DD',
+                    tooltipFormat: 'MMMM yy',
+                    unit: 'month',
                 },
             },
         },
+        plugins: {
+            legend: {
+                onHover: onLegendHover,
+                onClick: onLegendClick,
+            },
+        },
+
         spanGaps: true,
     };
 
-    return <Line data={data} options={options} />;
+    options = setupOpts(view, options);
+
+    const onClick = function (props) {
+        console.log(props);
+    };
+
+    return <Line data={data} options={options} getElementAtEvent={onClick} />;
 };
 
 export default Linegraph;
