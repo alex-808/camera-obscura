@@ -13,6 +13,7 @@ const Explorer = function ({ trackData }) {
     const [currentDateRange, setCurrentDateRange] = useState(
         getViewsDateRange(defaultDate)
     );
+    const [selectedDateRange, setSelectedDateRange] = useState();
     const [currentTracks, setCurrentTracks] = useState();
     const [graphDatasets, setGraphDatasets] = useState({ datasets: {} });
 
@@ -45,10 +46,23 @@ const Explorer = function ({ trackData }) {
                 tracks.push(trackInfo);
             }
         }
-        return tracks.map((trackInfo) => (
-            <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
-        ));
+        return (
+            <div onMouseEnter={hoverOverTile.bind(null, date)}>
+                {tracks.map((trackInfo) => (
+                    <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
+                ))}
+            </div>
+        );
     };
+
+    function hoverOverTile(date) {
+        const start = new Date(date);
+        const end = new Date(date);
+        // todo will need to create a version for months and years as well
+        end.setUTCHours(23, 59, 59, 999);
+        console.log([start, end]);
+        setSelectedDateRange([start, end]);
+    }
 
     function getViewsDateRange({ activeStartDate, view }) {
         let startDate = !activeStartDate ? new Date() : activeStartDate;
@@ -222,7 +236,11 @@ const Explorer = function ({ trackData }) {
                     onClick={onClick}
                     value={new Date()}
                 />
-                <Linegraph datasets={graphDatasets} view={currentView} />
+                <Linegraph
+                    datasets={graphDatasets}
+                    view={currentView}
+                    selectedDateRange={selectedDateRange}
+                />
             </>
         );
     } else {

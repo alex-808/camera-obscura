@@ -31,6 +31,6 @@ const analysisFeatures = [
     'valence',
 ];
 
-// let defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
+const defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
 
-export { randomColor, Dataset, analysisFeatures };
+export { randomColor, Dataset, analysisFeatures, defaultEnabledFeatures };

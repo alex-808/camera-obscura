@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { randomColor } from '../../utils/charts';
+import { randomColor, defaultEnabledFeatures } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
-const Linegraph = function ({ datasets, view }) {
-    console.log('rerender');
+const Linegraph = function ({ datasets, view, selectedDateRange }) {
+    console.log(selectedDateRange);
 
-    let defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
+    // let defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
 
     const [enabledFeatures, setEnabledFeatures] = useState(
         defaultEnabledFeatures
@@ -130,7 +130,23 @@ const Linegraph = function ({ datasets, view }) {
         },
 
         spanGaps: true,
+        elements: {
+            point: {
+                radius: customRadius,
+                display: false,
+            },
+        },
     };
+    // this is how we can highlight points when a calendar date is hovered over
+    function customRadius(context) {
+        console.log(context);
+        if (
+            context.raw.date >= selectedDateRange[0] &&
+            context.raw.date <= selectedDateRange[1]
+        ) {
+            return 10;
+        } else return 2;
+    }
 
     options = setupOpts(view, options);
 
