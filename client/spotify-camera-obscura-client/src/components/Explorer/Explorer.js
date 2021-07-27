@@ -1,4 +1,4 @@
-import { useState, React, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Linegraph from '../Linegraph/Linegraph.js';
@@ -7,6 +7,7 @@ import * as dates from '../../utils/dates';
 import { analysisFeatures } from '../../utils/charts';
 
 const Explorer = function ({ trackData }) {
+    console.log('Explorer Render');
     const classes = useStyles();
 
     const defaultDate = { activeStartDate: new Date(), view: 'month' };
@@ -15,27 +16,32 @@ const Explorer = function ({ trackData }) {
     );
     const [selectedDateRange, setSelectedDateRange] = useState();
     const [currentTracks, setCurrentTracks] = useState();
-    const [graphDatasets, setGraphDatasets] = useState({ datasets: {} });
-
+    const [graphDatasets, setGraphDatasets] = useState(
+        createEmptyDataSets(analysisFeatures)
+    );
     const [currentView, setCurrentView] = useState(defaultDate.view);
 
     function updateDateRange(props) {
-        console.log(props);
+        // console.log(props);
         const date = props ? props : defaultDate;
         const range = getViewsDateRange(date);
+        const tracks = getTracksInRange(range, trackData);
+        const { datasets } = createGraphData(tracks, props.view);
         setCurrentDateRange(range);
         setCurrentView(props.view);
+        setCurrentTracks(tracks);
+        setGraphDatasets(datasets);
     }
 
-    useEffect(() => {
-        const tracks = getTracksInRange(currentDateRange, trackData);
-        setCurrentTracks(tracks);
-    }, [currentDateRange, trackData]);
+    // useEffect(() => {
+    //     const tracks = getTracksInRange(currentDateRange, trackData);
+    //     setCurrentTracks(tracks);
+    // }, [currentDateRange, trackData]);
 
-    useEffect(() => {
-        const { datasets } = createGraphData(currentTracks, currentView);
-        setGraphDatasets(datasets);
-    }, [currentTracks]);
+    // useEffect(() => {
+    //     const { datasets } = createGraphData(currentTracks, currentView);
+    //     setGraphDatasets(datasets);
+    // }, [currentTracks]);
 
     const generateTileContent = function ({ date, view }) {
         const tracks = [];
@@ -205,13 +211,13 @@ const Explorer = function ({ trackData }) {
         }
     }
 
-    const createEmptyDataSets = function (labels) {
+    function createEmptyDataSets(labels) {
         const datasets = {};
         for (let label of labels) {
             datasets[label] = [];
         }
         return datasets;
-    };
+    }
 
     const onChange = function (returnVal) {
         console.log(returnVal);
