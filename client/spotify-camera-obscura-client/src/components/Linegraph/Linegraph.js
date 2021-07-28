@@ -1,58 +1,52 @@
 import { useState, useEffect, useRef } from 'react';
 import * as dateUtils from '../../utils/dates';
 import { Line } from 'react-chartjs-2';
-import {
-    randomColor,
-    defaultEnabledFeatures,
-    CHART_COLORS,
-} from '../../utils/charts';
+import { defaultEnabledFeatures, CHART_COLORS } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
-    const [isSameTimePeriod, dateFormatter] = dateUtils.getViewsMethods(view);
+    const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
     const chartRef = useRef();
-    console.log(Object.entries(datasets).length);
+
     useEffect(() => {
         const chart = chartRef.current;
-        if (chart) {
-            let data = chart.data.datasets;
-
-            const selectedIndex = data[0].data.findIndex((el) => {
-                return isSameTimePeriod(el.date, selectedDateRange[0]);
-            });
-
-            if (chart.setActiveElements) {
-                if (selectedDateRange[0] === 0) {
-                    chart.setActiveElements([]);
-                    chart.tooltip.setActiveElements([]);
-                } else {
-                    // const n = Object.entries(datasets).length;
-                    // for (let i = 0; i < n; i++) {
-                    //     chart.tooltip.setActiveElements([
-                    //         {
-                    //             datasetIndex: n,
-                    //             index: selectedIndex,
-                    //         },
-                    //     ]);
-                    // }
-
-                    chart.setActiveElements([
-                        {
-                            datasetIndex: 0,
-                            index: selectedIndex,
-                        },
-                        {
-                            datasetIndex: 1,
-                            index: selectedIndex,
-                        },
-                    ]);
-                    console.log(chart.getActiveElements());
-                }
-
-                chart.render();
-            }
-        }
+        updateSelectedElements(chart);
     });
+
+    function updateSelectedElements(chart) {
+        if (!chart) return;
+        let data = chart.data.datasets;
+
+        const selectedIndex = data[0].data.findIndex((el) => {
+            return isSameTimePeriod(el.date, selectedDateRange[0]);
+        });
+
+        if (selectedDateRange[0] === 0) {
+            disableAllElements(chart);
+        } else {
+            activeSelectedElements(chart, selectedIndex);
+        }
+        chart.render();
+    }
+
+    function activeSelectedElements(chart, selectedIndex) {
+        const activeElements = [];
+        const n = Object.entries(datasets).length;
+        for (let i = 0; i < n; i++) {
+            // todo select only currently enabled analysis features
+            activeElements.push({
+                datasetIndex: i,
+                index: selectedIndex,
+            });
+        }
+        chart.setActiveElements(activeElements);
+        chart.tooltip.setActiveElements(activeElements);
+    }
+
+    function disableAllElements(chart) {
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([]);
+    }
 
     const [enabledFeatures, setEnabledFeatures] = useState(
         defaultEnabledFeatures
