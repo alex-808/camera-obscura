@@ -31,6 +31,23 @@ const analysisFeatures = [
     'valence',
 ];
 
+const CHART_COLORS = [
+    'red',
+    'green',
+    'blue',
+    'yellow',
+    'orange',
+    'purple',
+    'pink',
+    'black',
+];
+
 const defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
 
-export { randomColor, Dataset, analysisFeatures, defaultEnabledFeatures };
+export {
+    randomColor,
+    Dataset,
+    analysisFeatures,
+    defaultEnabledFeatures,
+    CHART_COLORS,
+};
