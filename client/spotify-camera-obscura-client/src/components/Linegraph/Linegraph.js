@@ -5,6 +5,9 @@ import { defaultEnabledFeatures, CHART_COLORS } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
+    const [enabledFeatures, setEnabledFeatures] = useState(
+        defaultEnabledFeatures
+    );
     const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
     const chartRef = useRef();
 
@@ -24,20 +27,22 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
         if (selectedDateRange[0] === 0) {
             disableAllElements(chart);
         } else {
-            activeSelectedElements(chart, selectedIndex);
+            activateSelectedElements(chart, selectedIndex);
         }
         chart.render();
     }
 
-    function activeSelectedElements(chart, selectedIndex) {
+    function activateSelectedElements(chart, selectedIndex) {
         const activeElements = [];
         const n = Object.entries(datasets).length;
+        console.log(datasets);
         for (let i = 0; i < n; i++) {
-            // todo select only currently enabled analysis features
-            activeElements.push({
-                datasetIndex: i,
-                index: selectedIndex,
-            });
+            if (enabledFeatures.includes(datasets[i].label)) {
+                activeElements.push({
+                    datasetIndex: i,
+                    index: selectedIndex,
+                });
+            }
         }
         chart.setActiveElements(activeElements);
         chart.tooltip.setActiveElements(activeElements);
@@ -47,10 +52,6 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
         chart.setActiveElements([]);
         chart.tooltip.setActiveElements([]);
     }
-
-    const [enabledFeatures, setEnabledFeatures] = useState(
-        defaultEnabledFeatures
-    );
 
     // todo maybe port this out of Linegraph actually, it's unneccessary
     const buildOutDatasets = function (datasets) {
@@ -96,15 +97,10 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
     };
 
     const onLegendHover = function (event, legendItem, legend) {
-        // console.log(event);
-        // console.log(legendItem);
-        // console.log(legend);
+        // todo Write/reveal explainer on audio feature on hover
     };
 
     const onLegendClick = function (event, legendItem, legend) {
-        console.log(event);
-        console.log(legendItem);
-        console.log(legend);
         const wasHidden = legendItem.hidden;
         const legendItemLabel = legendItem.text;
 
@@ -170,31 +166,15 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
                 onHover: onLegendHover,
                 onClick: onLegendClick,
             },
-            tooltip: {
-                // If I could make this scriptable or something
-                enabled: true,
-            },
         },
 
         spanGaps: true,
         elements: {
             point: {
-                // radius: customRadius,
-                // display: false,
+                // todo add styling
             },
         },
     };
-    // this is how we can highlight points when a calendar date is hovered over
-    // function customRadius(context) {
-    //     // console.log(context);
-    //     if (!context.raw) return 2;
-    //     if (
-    //         context.raw.date >= selectedDateRange[0] &&
-    //         context.raw.date <= selectedDateRange[1]
-    //     ) {
-    //         return 10;
-    //     } else return 2;
-    // }
 
     options = setupOpts(view, options);
 
@@ -209,7 +189,6 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
                 data={data}
                 options={options}
                 getElementAtEvent={onClick}
-                // redraw={true}
             />
         </>
     );
