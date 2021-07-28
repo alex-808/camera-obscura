@@ -16,18 +16,18 @@ class Dataset {
     }
 }
 
-const analysisFeatures = [
+const ANALYSIS_FEATURES = [
     'energy',
     'acousticness',
     'danceability',
     'instrumentalness',
-    // 'key',
+    'key',
     'liveness',
-    // 'loudness',
+    'loudness',
     'mode',
     'speechiness',
-    // 'tempo',
-    // 'timeSignature',
+    'tempo',
+    'time_signature',
     'valence',
 ];
 
@@ -40,14 +40,18 @@ const CHART_COLORS = [
     'purple',
     'pink',
     'black',
+    'teal',
+    'maroon',
+    'brown',
+    'grey',
 ];
 
-const defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
+const DEFAULT_ENABLED_FEATURES = ['energy', 'danceability', 'acousticness'];
 
 export {
     randomColor,
     Dataset,
-    analysisFeatures,
-    defaultEnabledFeatures,
+    ANALYSIS_FEATURES,
+    DEFAULT_ENABLED_FEATURES,
     CHART_COLORS,
 };

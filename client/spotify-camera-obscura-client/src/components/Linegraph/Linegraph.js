@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import * as dateUtils from '../../utils/dates';
 import { Line } from 'react-chartjs-2';
-import { defaultEnabledFeatures, CHART_COLORS } from '../../utils/charts';
+import { DEFAULT_ENABLED_FEATURES, CHART_COLORS } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
     const [enabledFeatures, setEnabledFeatures] = useState(
-        defaultEnabledFeatures
+        DEFAULT_ENABLED_FEATURES
     );
     const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
     const chartRef = useRef();
