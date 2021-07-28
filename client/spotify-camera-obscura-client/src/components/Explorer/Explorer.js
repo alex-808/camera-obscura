@@ -7,15 +7,14 @@ import * as dates from '../../utils/dates';
 import { analysisFeatures } from '../../utils/charts';
 
 const Explorer = function ({ trackData }) {
-    console.log('Explorer Render');
     const classes = useStyles();
 
     const defaultDate = { activeStartDate: new Date(), view: 'month' };
-    const [currentDateRange, setCurrentDateRange] = useState(
-        getViewsDateRange(defaultDate)
-    );
+    // const [currentDateRange, setCurrentDateRange] = useState(
+    //     getViewsDateRange(defaultDate)
+    // );
     const [selectedDateRange, setSelectedDateRange] = useState();
-    const [currentTracks, setCurrentTracks] = useState();
+    // const [currentTracks, setCurrentTracks] = useState();
     const [graphDatasets, setGraphDatasets] = useState(
         createEmptyDataSets(analysisFeatures)
     );
@@ -27,9 +26,9 @@ const Explorer = function ({ trackData }) {
         const range = getViewsDateRange(date);
         const tracks = getTracksInRange(range, trackData);
         const { datasets } = createGraphData(tracks, props.view);
-        setCurrentDateRange(range);
+        // setCurrentDateRange(range);
         setCurrentView(props.view);
-        setCurrentTracks(tracks);
+        // setCurrentTracks(tracks);
         setGraphDatasets(datasets);
     }
 
@@ -53,7 +52,10 @@ const Explorer = function ({ trackData }) {
             }
         }
         return (
-            <div onMouseEnter={hoverOverTile.bind(null, date)}>
+            <div
+                onMouseEnter={hoverOverTile.bind(null, date)}
+                onMouseOut={exitTile}
+            >
                 {tracks.map((trackInfo) => (
                     <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
                 ))}
@@ -68,6 +70,10 @@ const Explorer = function ({ trackData }) {
         end.setUTCHours(23, 59, 59, 999);
         console.log([start, end]);
         setSelectedDateRange([start, end]);
+    }
+
+    function exitTile() {
+        setSelectedDateRange([0, 0]);
     }
 
     function getViewsDateRange({ activeStartDate, view }) {
