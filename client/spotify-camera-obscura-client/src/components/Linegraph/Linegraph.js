@@ -1,12 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import * as dateUtils from '../../utils/dates';
 import { Line } from 'react-chartjs-2';
-import { randomColor, defaultEnabledFeatures } from '../../utils/charts';
+import {
+    randomColor,
+    defaultEnabledFeatures,
+    CHART_COLORS,
+} from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
-const Linegraph = function ({ datasets, view, selectedDateRange }) {
-    console.log(selectedDateRange);
+const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
+    const [isSameTimePeriod, dateFormatter] = dateUtils.getViewsMethods(view);
+    const chartRef = useRef();
+    console.log(Object.entries(datasets).length);
+    useEffect(() => {
+        const chart = chartRef.current;
+        if (chart) {
+            let data = chart.data.datasets;
 
-    // let defaultEnabledFeatures = ['energy', 'danceability', 'acousticness'];
+            const selectedIndex = data[0].data.findIndex((el) => {
+                return isSameTimePeriod(el.date, selectedDateRange[0]);
+            });
+
+            if (chart.setActiveElements) {
+                if (selectedDateRange[0] === 0) {
+                    chart.setActiveElements([]);
+                    chart.tooltip.setActiveElements([]);
+                } else {
+                    // const n = Object.entries(datasets).length;
+                    // for (let i = 0; i < n; i++) {
+                    //     chart.tooltip.setActiveElements([
+                    //         {
+                    //             datasetIndex: n,
+                    //             index: selectedIndex,
+                    //         },
+                    //     ]);
+                    // }
+
+                    chart.setActiveElements([
+                        {
+                            datasetIndex: 0,
+                            index: selectedIndex,
+                        },
+                        {
+                            datasetIndex: 1,
+                            index: selectedIndex,
+                        },
+                    ]);
+                    console.log(chart.getActiveElements());
+                }
+
+                chart.render();
+            }
+        }
+    });
 
     const [enabledFeatures, setEnabledFeatures] = useState(
         defaultEnabledFeatures
@@ -15,17 +61,19 @@ const Linegraph = function ({ datasets, view, selectedDateRange }) {
     // todo maybe port this out of Linegraph actually, it's unneccessary
     const buildOutDatasets = function (datasets) {
         const finalizedDatasets = [];
+        let i = 0;
         for (let [label, data] of Object.entries(datasets)) {
             const dataset = {
                 label: label,
                 data: data,
                 // fill: true,
                 hidden: !enabledFeatures.includes(label),
-                backgroundColor: randomColor(),
-                borderColor: randomColor(),
+                backgroundColor: CHART_COLORS[i],
+                borderColor: CHART_COLORS[i],
                 tension: 0.5,
             };
             finalizedDatasets.push(dataset);
+            i++;
         }
         return finalizedDatasets;
     };
@@ -88,6 +136,7 @@ const Linegraph = function ({ datasets, view, selectedDateRange }) {
     //todo put this in charts module when we're done
 
     let options = {
+        animation: false,
         // animations: {
         //     tension: {
         //         duration: 1000,
@@ -127,26 +176,31 @@ const Linegraph = function ({ datasets, view, selectedDateRange }) {
                 onHover: onLegendHover,
                 onClick: onLegendClick,
             },
+            tooltip: {
+                // If I could make this scriptable or something
+                enabled: true,
+            },
         },
 
         spanGaps: true,
         elements: {
             point: {
-                radius: customRadius,
-                display: false,
+                // radius: customRadius,
+                // display: false,
             },
         },
     };
     // this is how we can highlight points when a calendar date is hovered over
-    function customRadius(context) {
-        console.log(context);
-        if (
-            context.raw.date >= selectedDateRange[0] &&
-            context.raw.date <= selectedDateRange[1]
-        ) {
-            return 10;
-        } else return 2;
-    }
+    // function customRadius(context) {
+    //     // console.log(context);
+    //     if (!context.raw) return 2;
+    //     if (
+    //         context.raw.date >= selectedDateRange[0] &&
+    //         context.raw.date <= selectedDateRange[1]
+    //     ) {
+    //         return 10;
+    //     } else return 2;
+    // }
 
     options = setupOpts(view, options);
 
@@ -154,7 +208,17 @@ const Linegraph = function ({ datasets, view, selectedDateRange }) {
         console.log(props);
     };
 
-    return <Line data={data} options={options} getElementAtEvent={onClick} />;
+    return (
+        <>
+            <Line
+                ref={chartRef}
+                data={data}
+                options={options}
+                getElementAtEvent={onClick}
+                // redraw={true}
+            />
+        </>
+    );
 };
 
 export default Linegraph;
