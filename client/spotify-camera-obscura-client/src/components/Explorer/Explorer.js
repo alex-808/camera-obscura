@@ -6,7 +6,7 @@ import useStyles from './styles';
 import * as dates from '../../utils/dates';
 import { ANALYSIS_FEATURES } from '../../utils/charts';
 import { DateFeatures } from '../../utils/dateFeatures.js';
-import { averageConcurrentTracks } from '../../utils/averageTracks.js';
+import { averageConcurrentTracks } from './average';
 
 const Explorer = function ({ trackData }) {
     const classes = useStyles();

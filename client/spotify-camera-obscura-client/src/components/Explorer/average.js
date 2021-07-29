@@ -1,6 +1,6 @@
-import * as dates from '../utils/dates';
-import { DateFeatures } from '../utils/dateFeatures';
-import { ANALYSIS_FEATURES } from '../utils/charts';
+import * as dates from '../../utils/dates';
+import { DateFeatures } from '../../utils/dateFeatures';
+import { ANALYSIS_FEATURES } from '../../utils/charts';
 
 const averageConcurrentTracks = function (tracks, view) {
     const bundledTracks = bundleConcurrentTracks(tracks, view);
