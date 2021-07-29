@@ -12,37 +12,21 @@ const Explorer = function ({ trackData }) {
     const classes = useStyles();
 
     const defaultDate = { activeStartDate: new Date(), view: 'month' };
-    // const [currentDateRange, setCurrentDateRange] = useState(
-    //     getViewsDateRange(defaultDate)
-    // );
+
     const [selectedDateRange, setSelectedDateRange] = useState();
-    // const [currentTracks, setCurrentTracks] = useState();
     const [graphDatasets, setGraphDatasets] = useState(
         createEmptyDataSets(ANALYSIS_FEATURES)
     );
     const [currentView, setCurrentView] = useState(defaultDate.view);
 
     function updateDateRange(props) {
-        // console.log(props);
         const date = props ? props : defaultDate;
         const range = getViewsDateRange(date);
         const tracks = getTracksInRange(range, trackData);
         const { datasets } = createGraphData(tracks, props.view);
-        // setCurrentDateRange(range);
         setCurrentView(props.view);
-        // setCurrentTracks(tracks);
         setGraphDatasets(datasets);
     }
-
-    // useEffect(() => {
-    //     const tracks = getTracksInRange(currentDateRange, trackData);
-    //     setCurrentTracks(tracks);
-    // }, [currentDateRange, trackData]);
-
-    // useEffect(() => {
-    //     const { datasets } = createGraphData(currentTracks, currentView);
-    //     setGraphDatasets(datasets);
-    // }, [currentTracks]);
 
     const generateTileContent = function ({ date, view }) {
         const tracks = [];
@@ -55,7 +39,7 @@ const Explorer = function ({ trackData }) {
         }
         return (
             <div
-                onMouseEnter={hoverOverTile.bind(null, date)}
+                onMouseEnter={hoverTile.bind(null, date)}
                 onMouseOut={exitTile}
             >
                 {tracks.map((trackInfo) => (
@@ -65,7 +49,7 @@ const Explorer = function ({ trackData }) {
         );
     };
 
-    function hoverOverTile(date) {
+    function hoverTile(date) {
         const start = new Date(date);
         const end = new Date(date);
         // todo will need to create a version for months and years as well
