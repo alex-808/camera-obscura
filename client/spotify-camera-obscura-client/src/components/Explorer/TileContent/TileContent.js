@@ -12,7 +12,7 @@ const TileContent = function ({ date, tracks, setSelectedDateRange }) {
         setSelectedDateRange([0, 0]);
     }
     return (
-        <div onMouseEnter={hoverTile.bind(null, date)} onMouseOut={exitTile}>
+        <div onMouseEnter={hoverTile.bind(null, date)} onMouseLeave={exitTile}>
             {tracks.map((trackInfo) => (
                 <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
             ))}
