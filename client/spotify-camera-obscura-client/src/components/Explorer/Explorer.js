@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Linegraph from '../Linegraph/Linegraph.js';
+import { TileContent } from './TileContent/TileContent';
 import useStyles from './styles';
 import * as dates from '../../utils/dates';
 import { ANALYSIS_FEATURES } from '../../utils/charts';
@@ -38,29 +39,13 @@ const Explorer = function ({ trackData }) {
             }
         }
         return (
-            <div
-                onMouseEnter={hoverTile.bind(null, date)}
-                onMouseOut={exitTile}
-            >
-                {tracks.map((trackInfo) => (
-                    <p key={trackInfo.track.id}>{trackInfo.track.name}</p>
-                ))}
-            </div>
+            <TileContent
+                date={date}
+                tracks={tracks}
+                setSelectedDateRange={setSelectedDateRange}
+            />
         );
     };
-
-    function hoverTile(date) {
-        const start = new Date(date);
-        const end = new Date(date);
-        // todo will need to create a version for months and years as well
-        end.setUTCHours(23, 59, 59, 999);
-        console.log([start, end]);
-        setSelectedDateRange([start, end]);
-    }
-
-    function exitTile() {
-        setSelectedDateRange([0, 0]);
-    }
 
     function getViewsDateRange({ activeStartDate, view }) {
         let startDate = !activeStartDate ? new Date() : activeStartDate;
