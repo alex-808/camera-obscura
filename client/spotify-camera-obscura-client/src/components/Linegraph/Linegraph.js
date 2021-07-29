@@ -5,6 +5,7 @@ import { DEFAULT_ENABLED_FEATURES, CHART_COLORS } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
+    console.log(datasets);
     const [enabledFeatures, setEnabledFeatures] = useState(
         DEFAULT_ENABLED_FEATURES
     );
@@ -24,7 +25,7 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
             return isSameTimePeriod(el.date, selectedDateRange[0]);
         });
 
-        if (selectedDateRange[0] === 0) {
+        if (selectedDateRange[0] === 0 || selectedIndex === -1) {
             disableAllElements(chart);
         } else {
             activateSelectedElements(chart, selectedIndex);
@@ -43,6 +44,8 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
                 });
             }
         }
+        if (!activeElements.length) return;
+        console.log(activeElements);
         chart.setActiveElements(activeElements);
         chart.tooltip.setActiveElements(activeElements);
     }
@@ -81,6 +84,10 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
 
     const setupOpts = function (view, opts) {
         const viewTooltipFormats = {
+            day: {
+                tooltipFormat: 'DD ttt',
+                tickUnit: 'hour',
+            },
             month: {
                 tooltipFormat: 'DD',
                 tickUnit: 'day',
