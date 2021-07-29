@@ -66,6 +66,7 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
                 backgroundColor: CHART_COLORS[i],
                 borderColor: CHART_COLORS[i],
                 tension: 0.5,
+                hoverBackgroundColor: 'black',
             };
             finalizedDatasets.push(dataset);
             i++;

@@ -20,21 +20,26 @@ const Explorer = function ({ trackData }) {
     );
     const [currentView, setCurrentView] = useState(defaultDate.view);
 
-    function updateDateRange(props) {
-        const date = props ? props : defaultDate;
-        const range = getViewsDateRange(date);
+    function updateDateRange({ activeStartDate, view }) {
+        const range = getViewsDateRange(activeStartDate, view);
         const tracks = getTracksInRange(range, trackData);
-        const { datasets } = createGraphData(tracks, props.view);
-        setCurrentView(props.view);
+        const { datasets } = createGraphData(tracks, view);
+        setCurrentView(view);
         setGraphDatasets(datasets);
     }
 
-    const generateTileContent = function ({ date, view }) {
+    const generateTileContent = function ({ activeStartDate, view, date }) {
         const tracks = [];
+        // todo Optimize this, we shouldn't have to go thru every single track on every render. Maybe bring back the currentTracks state
+        const range = getViewsDateRange(activeStartDate, view);
         const [isSameTimePeriod] = dates.getViewsMethods(view);
         for (let [trackDate, trackInfo] of Object.entries(trackData)) {
             trackDate = new Date(trackDate);
-            if (isSameTimePeriod(date, trackDate)) {
+            if (
+                isSameTimePeriod(date, trackDate) &&
+                trackDate >= range[0] &&
+                trackDate <= range[1]
+            ) {
                 tracks.push(trackInfo);
             }
         }
@@ -47,7 +52,7 @@ const Explorer = function ({ trackData }) {
         );
     };
 
-    function getViewsDateRange({ activeStartDate, view }) {
+    function getViewsDateRange(activeStartDate, view) {
         let startDate = !activeStartDate ? new Date() : activeStartDate;
         const currentMonth = startDate.getMonth();
         const currentYear = startDate.getFullYear();
