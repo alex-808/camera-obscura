@@ -135,7 +135,8 @@ const Explorer = function ({ trackData }) {
         return datasets;
     }
 
-    const onChange = function (returnVal) {
+    const onChange = function (returnVal, e) {
+        console.log(e);
         console.log(returnVal);
     };
 
