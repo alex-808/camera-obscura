@@ -9,6 +9,7 @@ import { ANALYSIS_FEATURES } from '../../utils/charts';
 import { DateFeatures } from '../../utils/dateFeatures.js';
 import { averageConcurrentTracks } from './average';
 
+// ! Dates and times are relative to the user's current timezone
 const Explorer = function ({ trackData }) {
     const classes = useStyles();
 
@@ -20,13 +21,16 @@ const Explorer = function ({ trackData }) {
     );
     const [currentView, setCurrentView] = useState(defaultDate.view);
 
-    function updateDateRange({ activeStartDate, view }) {
+    function updateDataSets(activeStartDate, view) {
+        // todo set up these functions to be able to handle a 'day' view
         const range = getViewsDateRange(activeStartDate, view);
         const tracks = getTracksInRange(range, trackData);
         const { datasets } = createGraphData(tracks, view);
         setCurrentView(view);
         setGraphDatasets(datasets);
     }
+
+    // ! Commit when you're back
 
     const generateTileContent = function ({ activeStartDate, view, date }) {
         const tracks = [];
@@ -56,8 +60,15 @@ const Explorer = function ({ trackData }) {
         let startDate = !activeStartDate ? new Date() : activeStartDate;
         const currentMonth = startDate.getMonth();
         const currentYear = startDate.getFullYear();
+        const currentDay = startDate.getUTCDate();
         let range;
         if (view) {
+            if (view === 'day') {
+                range = [
+                    new Date(currentYear, currentMonth, currentDay),
+                    new Date(currentYear, currentMonth, currentDay + 1),
+                ];
+            }
             if (view === 'month') {
                 range = [
                     new Date(currentYear, currentMonth),
@@ -87,23 +98,27 @@ const Explorer = function ({ trackData }) {
 
     function getTracksInRange(dateRange, tracks) {
         const tracksInRange = [];
+        console.log(dateRange);
         for (let [trackDate, trackInfo] of Object.entries(tracks)) {
+            console.log(trackDate);
             trackDate = new Date(trackDate);
-            if (
-                trackDate > dateRange[0] &&
-                trackDate < dateRange[dateRange.length - 1]
-            ) {
+            console.log(trackDate);
+            if (trackDate >= dateRange[0] && trackDate < dateRange[1]) {
                 tracksInRange.push(trackInfo);
             }
         }
+
         return tracksInRange;
     }
 
     function createGraphData(tracks, view) {
         if (!tracks) return { datasets: null };
+        console.log(tracks);
         const datasets = createEmptyDataSets(ANALYSIS_FEATURES);
         tracks = sanitizeTrackData(tracks);
-        const averages = averageConcurrentTracks(tracks, view) || [];
+        let averages = tracks;
+        if (view !== 'day')
+            averages = averageConcurrentTracks(tracks, view || []);
         for (let track of averages) {
             let trackDate = new Date(track.date);
             for (let [label, dataset] of Object.entries(datasets)) {
@@ -113,6 +128,8 @@ const Explorer = function ({ trackData }) {
                 });
             }
         }
+
+        console.log(datasets);
 
         return { datasets: datasets };
     }
@@ -135,13 +152,16 @@ const Explorer = function ({ trackData }) {
         return datasets;
     }
 
-    const onChange = function (returnVal, e) {
-        console.log(e);
-        console.log(returnVal);
+    const onChange = function (dayStart, e) {
+        updateDataSets(dayStart, 'day');
     };
 
     const onClick = (props) => {
         console.log(props);
+    };
+
+    const handleViewChange = function ({ activeStartDate, view }) {
+        updateDataSets(activeStartDate, view);
     };
     if (graphDatasets) {
         return (
@@ -151,10 +171,10 @@ const Explorer = function ({ trackData }) {
                     // className={classes.myClass}
                     tileContent={generateTileContent}
                     calendarType="US"
-                    onViewChange={updateDateRange}
-                    onActiveStartDateChange={updateDateRange}
+                    onViewChange={handleViewChange}
+                    onActiveStartDateChange={handleViewChange}
                     onChange={onChange}
-                    returnValue={'range'}
+                    // returnValue={'range'}
                     minDetail={'decade'}
                     onClick={onClick}
                     value={new Date()}
