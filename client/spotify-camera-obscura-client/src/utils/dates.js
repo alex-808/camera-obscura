@@ -1,3 +1,9 @@
+const isExactSameTime = function (date1, date2) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
+    return date1.getTime() === date2.getTime();
+};
+
 const isSameDay = function (date1, date2) {
     date1 = new Date(date1);
     date2 = new Date(date2);
@@ -26,6 +32,8 @@ const isSameYear = function (date1, date2) {
 // todo I'd like to create a static class out of this:
 
 const getViewsMethods = function (view) {
+    // todo fix this so we aren't accidentally calling a function not there
+    if (view === 'day') return [isExactSameTime, null];
     if (view === 'month')
         return [isSameDay, generateDateFormatter(getYearMonthDay)];
     if (view === 'year')
