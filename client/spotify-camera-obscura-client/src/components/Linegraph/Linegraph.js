@@ -35,7 +35,6 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
     function activateSelectedElements(chart, selectedIndex) {
         const activeElements = [];
         const n = Object.entries(datasets).length;
-        console.log(datasets);
         for (let i = 0; i < n; i++) {
             if (enabledFeatures.includes(datasets[i].label)) {
                 activeElements.push({
@@ -86,7 +85,7 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
                 tooltipFormat: 'DD',
                 tickUnit: 'day',
             },
-            year: { tooltipFormat: 'MMM yy', tickUnit: 'month' },
+            year: { tooltipFormat: 'MMM yyyy', tickUnit: 'month' },
             decade: { tooltipFormat: 'yyyy', tickUnit: 'year' },
         };
 

@@ -113,6 +113,7 @@ const Explorer = function ({ trackData }) {
                 });
             }
         }
+
         return { datasets: datasets };
     }
 
@@ -146,7 +147,7 @@ const Explorer = function ({ trackData }) {
             <>
                 <div>Explorer</div>
                 <Calendar
-                    className={classes.myClass}
+                    // className={classes.myClass}
                     tileContent={generateTileContent}
                     calendarType="US"
                     onViewChange={updateDateRange}
@@ -156,6 +157,7 @@ const Explorer = function ({ trackData }) {
                     minDetail={'decade'}
                     onClick={onClick}
                     value={new Date()}
+                    // selectRange
                 />
                 <Linegraph
                     datasets={graphDatasets}

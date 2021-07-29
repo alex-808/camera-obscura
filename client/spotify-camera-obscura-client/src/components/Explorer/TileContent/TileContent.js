@@ -1,5 +1,5 @@
 import { Tooltip } from '@material-ui/core';
-import { ToolTipContent } from './CalendarToolTip/ToolTipContent';
+import { ToolTipContent } from './ToolTipContent/ToolTipContent';
 
 const TileContent = function ({ date, tracks, setSelectedDateRange }) {
     function hoverTile(date) {
