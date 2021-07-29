@@ -10,7 +10,7 @@ const isSameDay = function (date1, date2) {
     return (
         date1.getFullYear() === date2.getFullYear() &&
         date1.getMonth() === date2.getMonth() &&
-        date1.getUTCDate() === date2.getUTCDate()
+        date1.getDate() === date2.getDate()
     );
 };
 
@@ -33,7 +33,7 @@ const isSameYear = function (date1, date2) {
 
 const getViewsMethods = function (view) {
     // todo fix this so we aren't accidentally calling a function not there
-    if (view === 'day') return [isExactSameTime, null];
+    if (view === 'day') return [isExactSameTime, generateDateFormatter(Date)];
     if (view === 'month')
         return [isSameDay, generateDateFormatter(getYearMonthDay)];
     if (view === 'year')
@@ -98,7 +98,7 @@ const getYearMonthDay = function (date) {
     date = new Date(date);
     const year = date.getFullYear();
     const month = date.getMonth();
-    const day = date.getUTCDate();
+    const day = date.getDate();
 
     return [year, month, day];
 };
@@ -118,9 +118,4 @@ const getYear = function (date) {
     return [year];
 };
 
-export {
-    getDaysInRange,
-    getViewsMethods,
-    getYearMonthDay,
-    generateDateFormatter,
-};
+export { getViewsMethods, getYearMonthDay, generateDateFormatter };
