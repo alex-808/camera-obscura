@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Linegraph from '../Linegraph/Linegraph.js';
+import { Bargraph } from './Bargraph/Bargraph.js';
 import { TileContent } from './TileContent/TileContent';
 import useStyles from './styles';
 import * as dates from '../../utils/dates';
@@ -22,15 +23,12 @@ const Explorer = function ({ trackData }) {
     const [currentView, setCurrentView] = useState(defaultDate.view);
 
     function updateDataSets(activeStartDate, view) {
-        // todo set up these functions to be able to handle a 'day' view
         const range = getViewsDateRange(activeStartDate, view);
         const tracks = getTracksInRange(range, trackData);
         const { datasets } = createGraphData(tracks, view);
         setCurrentView(view);
         setGraphDatasets(datasets);
     }
-
-    // ! Commit when you're back
 
     const generateTileContent = function ({ activeStartDate, view, date }) {
         const tracks = [];
@@ -98,11 +96,8 @@ const Explorer = function ({ trackData }) {
 
     function getTracksInRange(dateRange, tracks) {
         const tracksInRange = [];
-        console.log(dateRange);
         for (let [trackDate, trackInfo] of Object.entries(tracks)) {
-            console.log(trackDate);
             trackDate = new Date(trackDate);
-            console.log(trackDate);
             if (trackDate >= dateRange[0] && trackDate < dateRange[1]) {
                 tracksInRange.push(trackInfo);
             }
@@ -113,13 +108,11 @@ const Explorer = function ({ trackData }) {
 
     function createGraphData(tracks, view) {
         if (!tracks) return { datasets: null };
-        console.log(tracks);
         const datasets = createEmptyDataSets(ANALYSIS_FEATURES);
         tracks = sanitizeTrackData(tracks);
-        let averages = tracks;
         if (view !== 'day')
-            averages = averageConcurrentTracks(tracks, view || []);
-        for (let track of averages) {
+            tracks = averageConcurrentTracks(tracks, view || []);
+        for (let track of tracks) {
             let trackDate = new Date(track.date);
             for (let [label, dataset] of Object.entries(datasets)) {
                 dataset.push({
@@ -129,7 +122,7 @@ const Explorer = function ({ trackData }) {
             }
         }
 
-        console.log(datasets);
+        console.log('Explorer', datasets);
 
         return { datasets: datasets };
     }
@@ -180,11 +173,16 @@ const Explorer = function ({ trackData }) {
                     value={new Date()}
                     // selectRange
                 />
-                <Linegraph
-                    datasets={graphDatasets}
-                    view={currentView}
-                    selectedDateRange={selectedDateRange}
-                />
+                {graphDatasets.energy.length !== 1 ? (
+                    <Linegraph
+                        datasets={graphDatasets}
+                        view={currentView}
+                        selectedDateRange={selectedDateRange}
+                    />
+                ) : (
+                    <Bargraph dataset={graphDatasets} />
+                )}
+                {/* <Bargraph dataset={graphDatasets} /> */}
             </>
         );
     } else {

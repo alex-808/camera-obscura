@@ -5,7 +5,6 @@ import { DEFAULT_ENABLED_FEATURES, CHART_COLORS } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 
 const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
-    console.log(datasets);
     const [enabledFeatures, setEnabledFeatures] = useState(
         DEFAULT_ENABLED_FEATURES
     );
@@ -45,7 +44,6 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
             }
         }
         if (!activeElements.length) return;
-        console.log(activeElements);
         chart.setActiveElements(activeElements);
         chart.tooltip.setActiveElements(activeElements);
     }
@@ -77,7 +75,6 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
     };
 
     datasets = buildOutDatasets(datasets);
-
     const data = {
         datasets: datasets,
     };
