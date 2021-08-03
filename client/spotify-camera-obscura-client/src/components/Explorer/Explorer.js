@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import Linegraph from '../Linegraph/Linegraph.js';
-import { Bargraph } from './Bargraph/Bargraph.js';
+import { GraphHandler } from './GraphHandler/GraphHandler.js';
 import { TileContent } from './TileContent/TileContent';
 import useStyles from './styles';
 import * as dates from '../../utils/dates';
@@ -173,16 +172,11 @@ const Explorer = function ({ trackData }) {
                     value={new Date()}
                     // selectRange
                 />
-                {graphDatasets.energy.length !== 1 ? (
-                    <Linegraph
-                        datasets={graphDatasets}
-                        view={currentView}
-                        selectedDateRange={selectedDateRange}
-                    />
-                ) : (
-                    <Bargraph dataset={graphDatasets} />
-                )}
-                {/* <Bargraph dataset={graphDatasets} /> */}
+                <GraphHandler
+                    datasets={graphDatasets}
+                    currentView={currentView}
+                    selectedDateRange={selectedDateRange}
+                />
             </>
         );
     } else {

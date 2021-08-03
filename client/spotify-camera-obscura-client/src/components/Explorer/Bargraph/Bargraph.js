@@ -8,9 +8,12 @@ import {
 
 const Bargraph = function ({ dataset }) {
     console.log('Bargraph', dataset);
+    // todo raise this state to the Explorer component
     const [enabledFeatures, setEnabledFeatures] = useState(
         DEFAULT_ENABLED_FEATURES
     );
+
+    // todo investigate how data is sent differently/used between Linegraph and this component
     const buildOutDatasets = function (datasets) {
         // ! Clean this mess up wow
         const datasetsArr = [];
@@ -60,13 +63,7 @@ const Bargraph = function ({ dataset }) {
             yAxisKey: 'data',
         },
     };
-    // let options = {
-    //     parsing: {
-    //         // xAxisKey: 'value',
-    //     },
-    // };
     return <Bar data={data} options={options} />;
-    // return <p></p>;
 };
 
 export { Bargraph };

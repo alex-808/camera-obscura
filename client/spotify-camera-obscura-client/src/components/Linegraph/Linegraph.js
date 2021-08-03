@@ -198,4 +198,4 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
     );
 };
 
-export default Linegraph;
+export { Linegraph };
