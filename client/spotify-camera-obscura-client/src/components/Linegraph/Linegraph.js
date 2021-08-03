@@ -1,15 +1,38 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as dateUtils from '../../utils/dates';
 import { Line } from 'react-chartjs-2';
-import { DEFAULT_ENABLED_FEATURES, CHART_COLORS } from '../../utils/charts';
+import { CHART_COLORS, Dataset } from '../../utils/charts';
 import 'chartjs-adapter-luxon';
+import { linegraphTestData } from '../Explorer/graphTestData/graphTestData';
 
-const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
-    const [enabledFeatures, setEnabledFeatures] = useState(
-        DEFAULT_ENABLED_FEATURES
-    );
+const Linegraph = function ({
+    datasets,
+    view,
+    selectedDateRange = [0, 0],
+    enabledFeatures,
+    onLegendClick,
+    onLegendHover,
+}) {
     const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
     const chartRef = useRef();
+
+    // todo maybe port this out of Linegraph actually, it's unneccessary
+    const buildOutDatasets = function (datasets) {
+        const finalizedDatasets = [];
+        let i = 0;
+        for (let [label, data] of Object.entries(datasets)) {
+            const dataset = new Dataset(
+                label,
+                data,
+                CHART_COLORS[i],
+                CHART_COLORS[i]
+            );
+            dataset.hidden = !enabledFeatures.includes(dataset.label);
+            finalizedDatasets.push(dataset);
+            i++;
+        }
+        return finalizedDatasets;
+    };
 
     useEffect(() => {
         const chart = chartRef.current;
@@ -53,27 +76,6 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
         chart.tooltip.setActiveElements([]);
     }
 
-    // todo maybe port this out of Linegraph actually, it's unneccessary
-    const buildOutDatasets = function (datasets) {
-        const finalizedDatasets = [];
-        let i = 0;
-        for (let [label, data] of Object.entries(datasets)) {
-            const dataset = {
-                label: label,
-                data: data,
-                // fill: true,
-                hidden: !enabledFeatures.includes(label),
-                backgroundColor: CHART_COLORS[i],
-                borderColor: CHART_COLORS[i],
-                tension: 0.5,
-                hoverBackgroundColor: 'black',
-            };
-            finalizedDatasets.push(dataset);
-            i++;
-        }
-        return finalizedDatasets;
-    };
-
     datasets = buildOutDatasets(datasets);
     const data = {
         datasets: datasets,
@@ -98,33 +100,6 @@ const Linegraph = function ({ datasets, view, selectedDateRange = [0, 0] }) {
         opts.scales.xAxes.time.unit = viewTooltipFormats[`${view}`].tickUnit;
 
         return opts;
-    };
-
-    const onLegendHover = function (event, legendItem, legend) {
-        // todo Write/reveal explainer on audio feature on hover
-    };
-
-    const onLegendClick = function (event, legendItem, legend) {
-        const wasHidden = legendItem.hidden;
-        const legendItemLabel = legendItem.text;
-
-        if (wasHidden) {
-            setEnabledFeatures([...enabledFeatures, legendItemLabel]);
-        } else {
-            setEnabledFeatures(
-                enabledFeatures.filter((el) => el !== legendItemLabel)
-            );
-        }
-
-        const index = legendItem.datasetIndex;
-        const ci = legend.chart;
-        if (ci.isDatasetVisible(index)) {
-            ci.hide(index);
-            legendItem.hidden = true;
-        } else {
-            ci.show(index);
-            legendItem.hidden = false;
-        }
     };
 
     //todo put this in charts module when we're done
