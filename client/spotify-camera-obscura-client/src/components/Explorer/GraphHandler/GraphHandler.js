@@ -1,13 +1,28 @@
-import { DEFAULT_ENABLED_FEATURES } from '../../../utils/charts';
+import {
+    buildOutDatasets,
+    CHART_TYPES,
+    DEFAULT_ENABLED_FEATURES,
+} from '../../../utils/charts';
 import { Bargraph } from '../Bargraph/Bargraph';
 import { Linegraph } from '../../Linegraph/Linegraph';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const GraphHandler = function ({ datasets, currentView, selectedDateRange }) {
     const [enabledFeatures, setEnabledFeatures] = useState(
         DEFAULT_ENABLED_FEATURES
     );
 
+    const calcGraphType = function (datasets) {
+        if (datasets.energy.length !== 1) return CHART_TYPES.Linegraph;
+        else return CHART_TYPES.Bargraph;
+    };
+
+    const graphType = calcGraphType(datasets);
+    console.log(graphType);
+
+    datasets = buildOutDatasets(datasets, graphType, enabledFeatures);
+
+    console.log(datasets);
     const onLegendHover = function (event, legendItem, legend) {
         // todo Write/reveal explainer on audio feature on hover
     };
@@ -37,7 +52,7 @@ const GraphHandler = function ({ datasets, currentView, selectedDateRange }) {
 
     // todo add generalized buildOutDatasets fn
 
-    if (datasets.energy.length !== 1) {
+    if (graphType === CHART_TYPES.Linegraph) {
         return (
             <Linegraph
                 datasets={datasets}
@@ -52,7 +67,7 @@ const GraphHandler = function ({ datasets, currentView, selectedDateRange }) {
     } else {
         return (
             <Bargraph
-                dataset={datasets}
+                datasets={datasets}
                 enabledFeatures={enabledFeatures}
                 setEnabledFeatures={setEnabledFeatures}
                 onLegendClick={onLegendClick}

@@ -46,6 +46,54 @@ const CHART_COLORS = [
     'grey',
 ];
 
+const CHART_TYPES = {
+    Linegraph: 'linegraph',
+    Bargraph: 'bargraph',
+};
+
+const buildOutDatasets = function (datasets, type, enabledFeatures) {
+    const finalizedDatasets = [];
+    let i = 0;
+    for (let [label, data] of Object.entries(datasets)) {
+        let dataset;
+        if (type === CHART_TYPES.Linegraph) {
+            dataset = createLineDataset(label, data, i);
+        } else {
+            dataset = createBarDataset(label, data, i);
+        }
+        dataset.hidden = !enabledFeatures.includes(dataset.label);
+        finalizedDatasets.push(dataset);
+        i++;
+    }
+    return finalizedDatasets;
+};
+
+const createBarDataset = function (label, data, datasetIndex) {
+    data = data[0].value;
+    const dataObj = {
+        label: label,
+        data: data,
+    };
+    const dataset = new Dataset(
+        label,
+        [dataObj],
+        CHART_COLORS[datasetIndex],
+        CHART_COLORS[datasetIndex]
+    );
+
+    return dataset;
+};
+
+const createLineDataset = function (label, data, datasetIndex) {
+    const dataset = new Dataset(
+        label,
+        data,
+        CHART_COLORS[datasetIndex],
+        CHART_COLORS[datasetIndex]
+    );
+    return dataset;
+};
+
 const DEFAULT_ENABLED_FEATURES = ['energy', 'danceability', 'acousticness'];
 
 export {
@@ -54,4 +102,6 @@ export {
     ANALYSIS_FEATURES,
     DEFAULT_ENABLED_FEATURES,
     CHART_COLORS,
+    CHART_TYPES,
+    buildOutDatasets,
 };

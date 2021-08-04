@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react';
 import * as dateUtils from '../../utils/dates';
 import { Line } from 'react-chartjs-2';
-import { CHART_COLORS, Dataset } from '../../utils/charts';
+import {
+    buildOutDatasets,
+    CHART_COLORS,
+    Dataset,
+    CHART_TYPES,
+} from '../../utils/charts';
 import 'chartjs-adapter-luxon';
 import { linegraphTestData } from '../Explorer/graphTestData/graphTestData';
 
@@ -16,22 +21,8 @@ const Linegraph = function ({
     const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
     const chartRef = useRef();
 
-    // todo maybe port this out of Linegraph actually, it's unneccessary
-    const buildOutDatasets = function (datasets) {
-        const finalizedDatasets = [];
-        let i = 0;
-        for (let [label, data] of Object.entries(datasets)) {
-            const dataset = new Dataset(
-                label,
-                data,
-                CHART_COLORS[i],
-                CHART_COLORS[i]
-            );
-            dataset.hidden = !enabledFeatures.includes(dataset.label);
-            finalizedDatasets.push(dataset);
-            i++;
-        }
-        return finalizedDatasets;
+    const data = {
+        datasets: datasets,
     };
 
     useEffect(() => {
@@ -75,11 +66,6 @@ const Linegraph = function ({
         chart.setActiveElements([]);
         chart.tooltip.setActiveElements([]);
     }
-
-    datasets = buildOutDatasets(datasets);
-    const data = {
-        datasets: datasets,
-    };
 
     const setupOpts = function (view, opts) {
         const viewTooltipFormats = {
