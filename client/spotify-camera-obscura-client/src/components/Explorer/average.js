@@ -2,10 +2,13 @@ import * as dates from '../../utils/dates';
 import { DateFeatures } from '../../utils/dateFeatures';
 import { ANALYSIS_FEATURES } from '../../utils/charts';
 
-const averageConcurrentTracks = function (tracks, view) {
-    const bundledTracks = bundleConcurrentTracks(tracks, view);
-    const [_, dateFormatter] = dates.getViewsMethods(view);
+const averageConcurrentTracks = function (tracks, viewMethods) {
+    const dateFormatter = viewMethods.getFormatter();
+    const comparer = viewMethods.getComparer();
+
+    const bundledTracks = bundleConcurrentTracks(tracks, comparer);
     if (!bundledTracks) return;
+
     const averages = [];
     for (let bundle of bundledTracks) {
         const date = dateFormatter(bundle[0].date);
@@ -20,9 +23,9 @@ const averageConcurrentTracks = function (tracks, view) {
     return averages;
 };
 
-const bundleConcurrentTracks = function (tracks, view) {
+const bundleConcurrentTracks = function (tracks, comparer) {
     if (!tracks.length) return;
-    const [isSameTimePeriod] = dates.getViewsMethods(view);
+    const isSameTimePeriod = comparer;
     const bundles = [];
     bundles.push([tracks[0]]);
     for (let i = 1; i < tracks.length; i++) {

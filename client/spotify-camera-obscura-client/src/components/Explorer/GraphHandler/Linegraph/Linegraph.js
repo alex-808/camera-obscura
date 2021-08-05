@@ -16,6 +16,8 @@ const Linegraph = function ({
         datasets: datasets,
     };
 
+    const viewMethods = new dateUtils.ViewMethods(view);
+
     useEffect(() => {
         const chart = chartRef.current;
         updateSelectedElements(chart);
@@ -24,7 +26,7 @@ const Linegraph = function ({
     function updateSelectedElements(chart) {
         if (!chart) return;
         let data = chart.data.datasets;
-        const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
+        const isSameTimePeriod = viewMethods.getComparer();
 
         const selectedIndex = data[0].data.findIndex((el) => {
             return isSameTimePeriod(el.date, selectedDateRange[0]);

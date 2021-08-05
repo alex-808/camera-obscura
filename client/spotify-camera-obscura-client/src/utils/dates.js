@@ -41,6 +41,42 @@ const getViewsMethods = function (view) {
     if (view === 'decade') return [isSameYear, generateDateFormatter(getYear)];
 };
 
+class ViewMethods {
+    constructor(view) {
+        this.view = view;
+    }
+
+    getFormatter = function () {
+        switch (this.view) {
+            case 'day':
+                return generateDateFormatter(Date);
+            case 'month':
+                return generateDateFormatter(getYearMonthDay);
+            case 'year':
+                return generateDateFormatter(getYearMonth);
+            case 'decade':
+                return generateDateFormatter(getYear);
+            default:
+                throw new Error('No view provided to class');
+        }
+    };
+
+    getComparer = function () {
+        switch (this.view) {
+            case 'day':
+                return isExactSameTime;
+            case 'month':
+                return isSameDay;
+            case 'year':
+                return isSameMonth;
+            case 'decade':
+                return isSameYear;
+            default:
+                throw new Error('No view provided to class');
+        }
+    };
+}
+
 const getDaysInRange = function (startDate, endDate) {
     startDate = new Date(startDate);
     endDate = new Date(endDate);
@@ -118,4 +154,50 @@ const getYear = function (date) {
     return [year];
 };
 
-export { getViewsMethods, getYearMonthDay, generateDateFormatter };
+function getViewsDateRange(activeStartDate, view) {
+    let startDate = !activeStartDate ? new Date() : activeStartDate;
+    startDate = new Date(startDate);
+    const currentMonth = startDate.getMonth();
+    const currentYear = startDate.getFullYear();
+    const currentDay = startDate.getUTCDate();
+    let range;
+    if (view) {
+        if (view === 'day') {
+            range = [
+                new Date(currentYear, currentMonth, currentDay),
+                new Date(currentYear, currentMonth, currentDay + 1),
+            ];
+        }
+        if (view === 'month') {
+            range = [
+                new Date(currentYear, currentMonth),
+                new Date(currentYear, currentMonth + 1),
+            ];
+        }
+        if (view === 'year') {
+            range = [new Date(currentYear, 0), new Date(currentYear + 1, 0)];
+        }
+        if (view === 'decade') {
+            range = [new Date(currentYear, 0), new Date(currentYear + 10, 0)];
+        }
+    } else {
+        range = [
+            new Date(currentYear, currentMonth),
+            new Date(currentYear, currentMonth + 1),
+        ];
+    }
+    return range;
+}
+
+const getNextDay = () => {};
+const getNextMonth = () => {};
+const getNextYear = () => {};
+const getNextDecade = () => {};
+
+export {
+    getViewsMethods,
+    getViewsDateRange,
+    getYearMonthDay,
+    generateDateFormatter,
+    ViewMethods,
+};

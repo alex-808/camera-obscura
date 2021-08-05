@@ -3,7 +3,6 @@ import { useRef } from 'react';
 const ToolTipContent = function ({ tracks, toggleSelectedSong }) {
     const buttonRef = useRef();
     function handleClick(buttonRef, trackInfo) {
-        console.log(trackInfo);
         toggleSelectedSong(buttonRef, [trackInfo]);
     }
 
