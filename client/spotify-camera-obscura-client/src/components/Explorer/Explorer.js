@@ -4,7 +4,12 @@ import 'react-calendar/dist/Calendar.css';
 import { GraphHandler } from './GraphHandler/GraphHandler.js';
 import { TileContent } from './TileContent/TileContent';
 import * as dates from '../../utils/dates';
-import { ANALYSIS_FEATURES, Dataset, CHART_TYPES } from '../../utils/charts';
+import {
+    ANALYSIS_FEATURES,
+    Dataset,
+    CHART_TYPES,
+    CHART_COLORS,
+} from '../../utils/charts';
 import { DateFeatures } from '../../utils/dateFeatures.js';
 import { averageConcurrentTracks } from './average';
 
@@ -151,8 +156,12 @@ const Explorer = function ({ trackData }) {
 
     function createEmptyDataSets(labels) {
         const datasets = [];
+        let i = 0;
         for (let label of labels) {
-            datasets.push(new Dataset(label));
+            datasets.push(
+                new Dataset(label, [], CHART_COLORS[i], CHART_COLORS[i])
+            );
+            i++;
         }
         return datasets;
     }
