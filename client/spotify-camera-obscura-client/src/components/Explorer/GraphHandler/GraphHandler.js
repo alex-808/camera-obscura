@@ -13,12 +13,10 @@ const GraphHandler = function ({ datasets, currentView, selectedDateRange }) {
     );
 
     const setGraphType = function (datasets) {
-        if (datasets.energy.length !== 1) return CHART_TYPES.Linegraph;
+        if (datasets[0].data.length !== 1) return CHART_TYPES.Linegraph;
         else return CHART_TYPES.Bargraph;
     };
-
     const graphType = setGraphType(datasets);
-
     datasets = buildOutDatasets(datasets, graphType, enabledFeatures);
 
     const onLegendHover = function (event, legendItem, legend) {

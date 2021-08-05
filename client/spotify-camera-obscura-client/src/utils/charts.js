@@ -54,13 +54,13 @@ const CHART_TYPES = {
 const buildOutDatasets = function (datasets, type, enabledFeatures) {
     const finalizedDatasets = [];
     let i = 0;
-    for (let [label, data] of Object.entries(datasets)) {
-        let dataset;
-        if (type === CHART_TYPES.Linegraph) {
-            dataset = createLineDataset(label, data, i);
-        } else {
-            dataset = createBarDataset(label, data, i);
-        }
+    for (let dataset of datasets) {
+        console.log(dataset);
+        // if (type === CHART_TYPES.Bargraph) {
+        //     dataset = createLineDataset(dataset);
+        // } else {
+        //     dataset = createBarDataset(dataset);
+        // }
         dataset.hidden = !enabledFeatures.includes(dataset.label);
         finalizedDatasets.push(dataset);
         i++;

@@ -1,6 +1,7 @@
 import { Bar } from 'react-chartjs-2';
 
 const Bargraph = function ({ datasets, onLegendClick, onLegendHover }) {
+    console.log(datasets);
     const data = {
         datasets: datasets,
     };
@@ -9,7 +10,7 @@ const Bargraph = function ({ datasets, onLegendClick, onLegendHover }) {
         animation: false,
         parsing: {
             xAxisKey: 'label',
-            yAxisKey: 'data',
+            yAxisKey: 'value',
         },
         plugins: {
             legend: {

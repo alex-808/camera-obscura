@@ -4,7 +4,7 @@ import 'react-calendar/dist/Calendar.css';
 import { GraphHandler } from './GraphHandler/GraphHandler.js';
 import { TileContent } from './TileContent/TileContent';
 import * as dates from '../../utils/dates';
-import { ANALYSIS_FEATURES } from '../../utils/charts';
+import { ANALYSIS_FEATURES, Dataset, CHART_TYPES } from '../../utils/charts';
 import { DateFeatures } from '../../utils/dateFeatures.js';
 import { averageConcurrentTracks } from './average';
 
@@ -92,28 +92,54 @@ const Explorer = function ({ trackData }) {
         return tracksInRange;
     }
 
+    // ! Simplify the shaping of this data thru classes
+    // This is some pretty intense heart surgery
     function createGraphData(tracks, view) {
         if (!tracks) return { datasets: null };
-        const datasets = createEmptyDataSets(ANALYSIS_FEATURES);
-        tracks = sanitizeTrackData(tracks);
+
+        let dateFeatures = convertTracksToDateFeatures(tracks);
+
         if (view !== 'day' && view !== 'single_track') {
             const viewMethods = new dates.ViewMethods(view);
-            tracks = averageConcurrentTracks(tracks, viewMethods || []);
+            dateFeatures = averageConcurrentTracks(
+                dateFeatures,
+                viewMethods || []
+            );
         }
+        const datasets = createDatasets(dateFeatures);
 
-        for (let track of tracks) {
-            let trackDate = new Date(track.date);
-            for (let [label, dataset] of Object.entries(datasets)) {
-                dataset.push({
-                    date: trackDate,
-                    value: track.analysisFeatures[`${label}`],
-                });
-            }
-        }
         return { datasets: datasets };
     }
 
-    function sanitizeTrackData(tracks) {
+    function createDatasets(dateFeatures) {
+        console.log(dateFeatures);
+        const graphType = getGraphType(dateFeatures);
+        const datasets = createEmptyDataSets(ANALYSIS_FEATURES);
+        for (let dateFeature of dateFeatures) {
+            let trackDate = new Date(dateFeature.date);
+            for (let dataset of datasets) {
+                if (graphType === CHART_TYPES.Linegraph) {
+                    dataset.data.push({
+                        date: trackDate,
+                        value: dateFeature.analysisFeatures[`${dataset.label}`],
+                    });
+                } else {
+                    dataset.data.push({
+                        label: dataset.label,
+                        value: dateFeature.analysisFeatures[`${dataset.label}`],
+                    });
+                }
+            }
+        }
+        return datasets;
+    }
+
+    const getGraphType = function (dateFeatures) {
+        if (dateFeatures.length !== 1) return CHART_TYPES.Linegraph;
+        else return CHART_TYPES.Bargraph;
+    };
+
+    function convertTracksToDateFeatures(tracks) {
         return tracks.map(
             (trackInfo) =>
                 new DateFeatures(
@@ -124,9 +150,9 @@ const Explorer = function ({ trackData }) {
     }
 
     function createEmptyDataSets(labels) {
-        const datasets = {};
+        const datasets = [];
         for (let label of labels) {
-            datasets[label] = [];
+            datasets.push(new Dataset(label));
         }
         return datasets;
     }
