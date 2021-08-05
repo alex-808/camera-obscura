@@ -1,14 +1,7 @@
 import { useEffect, useRef } from 'react';
-import * as dateUtils from '../../utils/dates';
+import * as dateUtils from '../../../../utils/dates';
 import { Line } from 'react-chartjs-2';
-import {
-    buildOutDatasets,
-    CHART_COLORS,
-    Dataset,
-    CHART_TYPES,
-} from '../../utils/charts';
 import 'chartjs-adapter-luxon';
-import { linegraphTestData } from '../Explorer/graphTestData/graphTestData';
 
 const Linegraph = function ({
     datasets,
@@ -18,9 +11,7 @@ const Linegraph = function ({
     onLegendClick,
     onLegendHover,
 }) {
-    const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
     const chartRef = useRef();
-
     const data = {
         datasets: datasets,
     };
@@ -33,6 +24,7 @@ const Linegraph = function ({
     function updateSelectedElements(chart) {
         if (!chart) return;
         let data = chart.data.datasets;
+        const [isSameTimePeriod] = dateUtils.getViewsMethods(view);
 
         const selectedIndex = data[0].data.findIndex((el) => {
             return isSameTimePeriod(el.date, selectedDateRange[0]);
@@ -88,19 +80,8 @@ const Linegraph = function ({
         return opts;
     };
 
-    //todo put this in charts module when we're done
-
     let options = {
         animation: false,
-        // animations: {
-        //     tension: {
-        //         duration: 1000,
-        //         easing: 'easeOutQuart',
-        //         from: 0.4,
-        //         to: 0.5,
-        //         loop: true,
-        //     },
-        // },
         parsing: {
             xAxisKey: 'date',
             yAxisKey: 'value',

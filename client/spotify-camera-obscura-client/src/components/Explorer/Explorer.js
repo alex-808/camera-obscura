@@ -3,7 +3,6 @@ import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { GraphHandler } from './GraphHandler/GraphHandler.js';
 import { TileContent } from './TileContent/TileContent';
-import useStyles from './styles';
 import * as dates from '../../utils/dates';
 import { ANALYSIS_FEATURES } from '../../utils/charts';
 import { DateFeatures } from '../../utils/dateFeatures.js';
@@ -11,8 +10,6 @@ import { averageConcurrentTracks } from './average';
 
 // ! Dates and times are relative to the user's current timezone
 const Explorer = function ({ trackData }) {
-    const classes = useStyles();
-
     const defaultDate = { activeStartDate: new Date(), view: 'month' };
 
     const [selectedDateRange, setSelectedDateRange] = useState();
@@ -20,14 +17,29 @@ const Explorer = function ({ trackData }) {
         createEmptyDataSets(ANALYSIS_FEATURES)
     );
     const [currentView, setCurrentView] = useState(defaultDate.view);
+    const [selectedTile, setSelectedTile] = useState();
 
     function updateDataSets(activeStartDate, view) {
+        console.log(activeStartDate);
         const range = getViewsDateRange(activeStartDate, view);
+        console.log({ range });
         const tracks = getTracksInRange(range, trackData);
+        console.log({ tracks });
         const { datasets } = createGraphData(tracks, view);
         setCurrentView(view);
         setGraphDatasets(datasets);
     }
+
+    const toggleSelectedTile = function (tileRef, date) {
+        if (tileRef.current === selectedTile) {
+            setSelectedTile(null);
+            const range = getViewsDateRange(date, 'month');
+            updateDataSets(range[0], 'month');
+        } else {
+            setSelectedTile(tileRef.current);
+            updateDataSets(date, 'day');
+        }
+    };
 
     const generateTileContent = function ({ activeStartDate, view, date }) {
         const tracks = [];
@@ -49,6 +61,9 @@ const Explorer = function ({ trackData }) {
                 date={date}
                 tracks={tracks}
                 setSelectedDateRange={setSelectedDateRange}
+                setSelectedTile={setSelectedTile}
+                selectedTile={selectedTile}
+                toggleSelectedTile={toggleSelectedTile}
             />
         );
     };
@@ -145,7 +160,12 @@ const Explorer = function ({ trackData }) {
     }
 
     const onChange = function (dayStart, e) {
-        updateDataSets(dayStart, 'day');
+        console.log(dayStart);
+        if (selectedTile) updateDataSets(dayStart, 'day');
+        else {
+            const range = getViewsDateRange(dayStart, 'month');
+            updateDataSets(range[0], defaultDate.view);
+        }
     };
 
     const onClick = (props) => {
@@ -165,7 +185,7 @@ const Explorer = function ({ trackData }) {
                     calendarType="US"
                     onViewChange={handleViewChange}
                     onActiveStartDateChange={handleViewChange}
-                    onChange={onChange}
+                    // onChange={onChange}
                     // returnValue={'range'}
                     minDetail={'decade'}
                     onClick={onClick}

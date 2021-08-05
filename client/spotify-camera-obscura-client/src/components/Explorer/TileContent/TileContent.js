@@ -1,7 +1,16 @@
 import { Tooltip } from '@material-ui/core';
 import { ToolTipContent } from './ToolTipContent/ToolTipContent';
+import { useRef } from 'react';
 
-const TileContent = function ({ date, tracks, setSelectedDateRange }) {
+const TileContent = function ({
+    date,
+    tracks,
+    setSelectedDateRange,
+    selectedTile,
+    toggleSelectedTile,
+}) {
+    const tileRef = useRef();
+
     function hoverTile(date) {
         const start = new Date(date);
         const end = new Date(date);
@@ -17,8 +26,19 @@ const TileContent = function ({ date, tracks, setSelectedDateRange }) {
     function hoverToolTip() {
         console.log('hovered');
     }
+
+    function calcBGColor() {
+        const color = selectedTile === tileRef.current ? 'blue' : 'yellow';
+
+        return { backgroundColor: color };
+    }
+
+    function handleClick(e, props) {
+        toggleSelectedTile(tileRef, date);
+    }
     return (
         <Tooltip
+            ref={tileRef}
             interactive={true}
             arrow={true}
             title={<ToolTipContent tracks={tracks} />}
@@ -26,6 +46,8 @@ const TileContent = function ({ date, tracks, setSelectedDateRange }) {
             <div
                 onMouseEnter={hoverTile.bind(null, date)}
                 onMouseLeave={exitTile}
+                style={calcBGColor()}
+                onClick={handleClick}
             >
                 <i>{tracks.length ? tracks.length + ' songs' : ''}</i>
             </div>

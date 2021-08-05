@@ -1,13 +1,6 @@
 import { Bar } from 'react-chartjs-2';
-import { CHART_COLORS, Dataset } from '../../../utils/charts';
-import { bargraphTestData } from '../graphTestData/graphTestData';
 
-const Bargraph = function ({
-    datasets,
-    enabledFeatures,
-    onLegendClick,
-    onLegendHover,
-}) {
+const Bargraph = function ({ datasets, onLegendClick, onLegendHover }) {
     const data = {
         datasets: datasets,
     };
