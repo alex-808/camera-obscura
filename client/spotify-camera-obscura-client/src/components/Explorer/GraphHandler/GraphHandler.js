@@ -13,11 +13,14 @@ const GraphHandler = function ({ datasets, currentView, selectedDateRange }) {
     );
 
     const setGraphType = function (datasets) {
+        console.log(datasets);
         if (datasets.energy.length !== 1) return CHART_TYPES.Linegraph;
         else return CHART_TYPES.Bargraph;
     };
 
     const graphType = setGraphType(datasets);
+
+    console.log(graphType);
 
     datasets = buildOutDatasets(datasets, graphType, enabledFeatures);
 

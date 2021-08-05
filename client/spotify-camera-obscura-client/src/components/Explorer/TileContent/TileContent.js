@@ -8,6 +8,7 @@ const TileContent = function ({
     setSelectedDateRange,
     selectedTile,
     toggleSelectedTile,
+    toggleSelectedSong,
 }) {
     const tileRef = useRef();
 
@@ -41,7 +42,12 @@ const TileContent = function ({
             ref={tileRef}
             interactive={true}
             arrow={true}
-            title={<ToolTipContent tracks={tracks} />}
+            title={
+                <ToolTipContent
+                    tracks={tracks}
+                    toggleSelectedSong={toggleSelectedSong}
+                />
+            }
         >
             <div
                 onMouseEnter={hoverTile.bind(null, date)}

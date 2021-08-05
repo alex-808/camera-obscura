@@ -1,7 +1,10 @@
-const ToolTipContent = function ({ tracks }) {
-    function onClick(addedAt, e) {
-        console.log(addedAt);
-        e.stopPropagation();
+import { useRef } from 'react';
+
+const ToolTipContent = function ({ tracks, toggleSelectedSong }) {
+    const buttonRef = useRef();
+    function handleClick(buttonRef, trackInfo) {
+        console.log(trackInfo);
+        toggleSelectedSong(buttonRef, [trackInfo]);
     }
 
     return (
@@ -9,7 +12,8 @@ const ToolTipContent = function ({ tracks }) {
             {tracks.map((trackInfo) => (
                 <button
                     key={trackInfo.track.id}
-                    onClick={onClick.bind(null, trackInfo.added_at)}
+                    onClick={handleClick.bind(null, buttonRef, trackInfo)}
+                    ref={buttonRef}
                 >
                     <p>
                         <i>{trackInfo.track.name}</i> by{' '}

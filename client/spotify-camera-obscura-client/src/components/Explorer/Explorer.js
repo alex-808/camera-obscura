@@ -8,6 +8,14 @@ import { ANALYSIS_FEATURES } from '../../utils/charts';
 import { DateFeatures } from '../../utils/dateFeatures.js';
 import { averageConcurrentTracks } from './average';
 
+// I'm debating with myself whether to include the functionality to be able to select individual songs and currently am siding on the idea that I should hold off. It could be worth a brief experiment. For example if I was able to just pass the trackInfo from a ToolTipContent into a createGraphData and setGraphDatasets it it could be pretty simple. But then what about the toggling functionality? Would I have to add a whole new piece of state for that?
+
+// I think a better solution would be to reuse the selectedTile functionality and just add an option for a 'single track' view or something
+
+// These are possibilities to explore but ultimately I also think I could/should spend this time cleaning up the code I have. Make some quality of life improvements like making getFirstOfMonth and getLastOfMonth helper functions for getViewsDateRange so I'm not using it to get a range when I just need a single day anyway
+
+// To me from the past: If you want to tackle this additional functionality, set a time limit on it. Give yourself an hour to try out the concept. If the simple solutions I've outlined don't seem like they will work, just leave it. We have a solid app right here as it is, it's just rough around the edges. If there's time we can always go back and work on that functionality.
+
 // ! Dates and times are relative to the user's current timezone
 const Explorer = function ({ trackData }) {
     const defaultDate = { activeStartDate: new Date(), view: 'month' };
@@ -19,27 +27,18 @@ const Explorer = function ({ trackData }) {
     const [currentView, setCurrentView] = useState(defaultDate.view);
     const [selectedTile, setSelectedTile] = useState();
 
-    function updateDataSets(activeStartDate, view) {
-        console.log(activeStartDate);
-        const range = getViewsDateRange(activeStartDate, view);
-        console.log({ range });
-        const tracks = getTracksInRange(range, trackData);
-        console.log({ tracks });
+    function updateDataSets(activeStartDate, view, tracks) {
+        if (view !== 'single_track') {
+            const range = getViewsDateRange(activeStartDate, view);
+            tracks = getTracksInRange(range, tracks);
+        }
+
+        console.log('updateDatasets tracks', tracks);
+
         const { datasets } = createGraphData(tracks, view);
         setCurrentView(view);
         setGraphDatasets(datasets);
     }
-
-    const toggleSelectedTile = function (tileRef, date) {
-        if (tileRef.current === selectedTile) {
-            setSelectedTile(null);
-            const range = getViewsDateRange(date, 'month');
-            updateDataSets(range[0], 'month');
-        } else {
-            setSelectedTile(tileRef.current);
-            updateDataSets(date, 'day');
-        }
-    };
 
     const generateTileContent = function ({ activeStartDate, view, date }) {
         const tracks = [];
@@ -64,12 +63,37 @@ const Explorer = function ({ trackData }) {
                 setSelectedTile={setSelectedTile}
                 selectedTile={selectedTile}
                 toggleSelectedTile={toggleSelectedTile}
+                toggleSelectedSong={toggleSelectedSong}
             />
         );
     };
 
+    const toggleSelectedTile = function (tileRef, date) {
+        if (tileRef.current === selectedTile) {
+            setSelectedTile(null);
+            const range = getViewsDateRange(date, 'month');
+            updateDataSets(range[0], 'month', trackData);
+        } else {
+            setSelectedTile(tileRef.current);
+            updateDataSets(date, 'day', trackData);
+        }
+    };
+
+    const toggleSelectedSong = function (buttonRef, track) {
+        if (buttonRef.current === selectedTile) {
+            setSelectedTile(null);
+            const range = getViewsDateRange(track[0].added_at, 'month');
+            updateDataSets(range[0], 'month', trackData);
+        } else {
+            setSelectedTile(buttonRef.current);
+            console.log('toggleSelectedSong tracks', track);
+            updateDataSets(null, 'single_track', track);
+        }
+    };
+
     function getViewsDateRange(activeStartDate, view) {
         let startDate = !activeStartDate ? new Date() : activeStartDate;
+        startDate = new Date(startDate);
         const currentMonth = startDate.getMonth();
         const currentYear = startDate.getFullYear();
         const currentDay = startDate.getUTCDate();
@@ -124,7 +148,7 @@ const Explorer = function ({ trackData }) {
         if (!tracks) return { datasets: null };
         const datasets = createEmptyDataSets(ANALYSIS_FEATURES);
         tracks = sanitizeTrackData(tracks);
-        if (view !== 'day')
+        if (view !== 'day' && view !== 'single_track')
             tracks = averageConcurrentTracks(tracks, view || []);
         for (let track of tracks) {
             let trackDate = new Date(track.date);
@@ -135,9 +159,7 @@ const Explorer = function ({ trackData }) {
                 });
             }
         }
-
-        console.log('Explorer', datasets);
-
+        console.log(datasets);
         return { datasets: datasets };
     }
 
@@ -159,21 +181,12 @@ const Explorer = function ({ trackData }) {
         return datasets;
     }
 
-    const onChange = function (dayStart, e) {
-        console.log(dayStart);
-        if (selectedTile) updateDataSets(dayStart, 'day');
-        else {
-            const range = getViewsDateRange(dayStart, 'month');
-            updateDataSets(range[0], defaultDate.view);
-        }
-    };
-
     const onClick = (props) => {
         console.log(props);
     };
 
     const handleViewChange = function ({ activeStartDate, view }) {
-        updateDataSets(activeStartDate, view);
+        updateDataSets(activeStartDate, view, trackData);
     };
     if (graphDatasets) {
         return (
