@@ -12,13 +12,17 @@ const GraphHandler = function ({ datasets, currentView, selectedDateRange }) {
         DEFAULT_ENABLED_FEATURES
     );
 
+    // This isn't DRY anymore, it's also present in explorer
     const setGraphType = function (datasets) {
         if (datasets[0].data.length !== 1) return CHART_TYPES.Linegraph;
         else return CHART_TYPES.Bargraph;
     };
     const graphType = setGraphType(datasets);
-    datasets = buildOutDatasets(datasets, graphType, enabledFeatures);
+    console.log(datasets);
+    // this function just handles hiding/unhiding different legend features now, should be moved or factored out completely
+    datasets = buildOutDatasets(datasets, enabledFeatures);
 
+    console.log(datasets);
     const onLegendHover = function (event, legendItem, legend) {
         // todo Write/reveal explainer on audio feature on hover
     };

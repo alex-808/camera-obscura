@@ -1,5 +1,5 @@
-import PlaylistPicker from '../PlaylistPicker/PlaylistPicker';
-import Explorer from '../Explorer/Explorer';
+import PlaylistPicker from '../PlaylistPicker/PlaylistPicker.jsx';
+import Explorer from '../Explorer/Explorer.jsx';
 import { useState } from 'react';
 import { testTracks, testTracks2 } from '../../testData/testData';
 

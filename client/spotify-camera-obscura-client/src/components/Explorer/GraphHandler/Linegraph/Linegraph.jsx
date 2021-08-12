@@ -119,7 +119,10 @@ const Linegraph = function ({
         spanGaps: true,
         elements: {
             point: {
-                // todo add styling
+                borderWidth: 15,
+            },
+            line: {
+                borderWidth: 15,
             },
         },
     };

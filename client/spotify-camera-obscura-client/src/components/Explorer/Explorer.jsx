@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { GraphHandler } from './GraphHandler/GraphHandler.js';
+import { GraphHandler } from './GraphHandler/GraphHandler';
+import { Header } from '../Header/Header.jsx';
 import { TileContent } from './TileContent/TileContent';
 import * as dates from '../../utils/dates';
 import {
@@ -97,8 +98,6 @@ const Explorer = function ({ trackData }) {
         return tracksInRange;
     }
 
-    // ! Simplify the shaping of this data thru classes
-    // This is some pretty intense heart surgery
     function createGraphData(tracks, view) {
         if (!tracks) return { datasets: null };
 
@@ -111,6 +110,7 @@ const Explorer = function ({ trackData }) {
                 viewMethods || []
             );
         }
+
         const datasets = createDatasets(dateFeatures);
 
         return { datasets: datasets };
@@ -176,7 +176,12 @@ const Explorer = function ({ trackData }) {
     if (graphDatasets) {
         return (
             <>
-                <div>Explorer</div>
+                <Header />
+                <GraphHandler
+                    datasets={graphDatasets}
+                    currentView={currentView}
+                    selectedDateRange={selectedDateRange}
+                />
                 <Calendar
                     tileContent={generateTileContent}
                     calendarType="US"
@@ -185,11 +190,6 @@ const Explorer = function ({ trackData }) {
                     minDetail={'decade'}
                     onClick={onClick}
                     value={new Date()}
-                />
-                <GraphHandler
-                    datasets={graphDatasets}
-                    currentView={currentView}
-                    selectedDateRange={selectedDateRange}
                 />
             </>
         );

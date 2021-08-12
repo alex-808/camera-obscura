@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as api from '../../api/requests.js';
-import Playlist from './Playlist/Playlist.js';
+import Playlist from './Playlist/Playlist.jsx';
 import placeholder from '../../imgs/logo192.png';
 
 function PlaylistPicker({ setTrackData }) {

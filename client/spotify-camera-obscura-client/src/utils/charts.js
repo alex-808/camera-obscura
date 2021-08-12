@@ -16,6 +16,7 @@ class Dataset {
     }
 }
 
+// Todo group these together by what will have the most similar values. For example, looking at tempo and energy at the same time is useless
 const ANALYSIS_FEATURES = [
     'energy',
     'acousticness',
@@ -32,16 +33,16 @@ const ANALYSIS_FEATURES = [
 ];
 
 const CHART_COLORS = [
-    'red',
-    'green',
-    'blue',
-    'yellow',
-    'orange',
-    'purple',
-    'pink',
-    'black',
-    'teal',
-    'maroon',
+    '#F786A4',
+    '#6AD9BB',
+    '#250D70',
+    '#F20F4B',
+    '#5D35DE',
+    '#660F2B',
+    '#30161F',
+    '#0D0F04',
+    '#BFB6DB',
+    '#C4ADB3',
     'brown',
     'grey',
 ];
@@ -51,47 +52,12 @@ const CHART_TYPES = {
     Bargraph: 'bargraph',
 };
 
-const buildOutDatasets = function (datasets, type, enabledFeatures) {
-    const finalizedDatasets = [];
-    let i = 0;
+const buildOutDatasets = function (datasets, enabledFeatures) {
     for (let dataset of datasets) {
-        console.log(dataset);
-        // if (type === CHART_TYPES.Bargraph) {
-        //     dataset = createLineDataset(dataset);
-        // } else {
-        //     dataset = createBarDataset(dataset);
-        // }
         dataset.hidden = !enabledFeatures.includes(dataset.label);
-        finalizedDatasets.push(dataset);
-        i++;
+        // dataset.fill = '+1';
     }
-    return finalizedDatasets;
-};
-
-const createBarDataset = function (label, data, datasetIndex) {
-    data = data[0].value;
-    const dataObj = {
-        label: label,
-        data: data,
-    };
-    const dataset = new Dataset(
-        label,
-        [dataObj],
-        CHART_COLORS[datasetIndex],
-        CHART_COLORS[datasetIndex]
-    );
-
-    return dataset;
-};
-
-const createLineDataset = function (label, data, datasetIndex) {
-    const dataset = new Dataset(
-        label,
-        data,
-        CHART_COLORS[datasetIndex],
-        CHART_COLORS[datasetIndex]
-    );
-    return dataset;
+    return datasets;
 };
 
 const DEFAULT_ENABLED_FEATURES = ['energy', 'danceability', 'acousticness'];
