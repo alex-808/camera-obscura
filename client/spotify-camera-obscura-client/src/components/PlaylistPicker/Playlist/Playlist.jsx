@@ -8,4 +8,4 @@ function Playlist({ playlist, img, handleClick }) {
     );
 }
 
-export default Playlist;
+export { Playlist };

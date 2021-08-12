@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Login from './components/Login.jsx';
-import Logout from './components/Logout';
-import Home from './components/Home/Home';
+import { Login } from './Login';
+import { Logout } from './Logout';
+import { Home } from './Home/Home';
 
 function App() {
     return (
@@ -23,4 +23,4 @@ function App() {
     );
 }
 
-export default App;
+export { App };

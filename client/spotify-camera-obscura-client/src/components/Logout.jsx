@@ -5,4 +5,4 @@ function Logout(props) {
     return <div>Logged out</div>;
 }
 
-export default Logout;
+export { Logout };

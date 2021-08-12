@@ -1,5 +1,5 @@
-import PlaylistPicker from '../PlaylistPicker/PlaylistPicker.jsx';
-import Explorer from '../Explorer/Explorer.jsx';
+import { PlaylistPicker } from '../PlaylistPicker/PlaylistPicker.jsx';
+import { Explorer } from '../Explorer/Explorer.jsx';
 import { useState } from 'react';
 import { testTracks, testTracks2 } from '../../testData/testData';
 
@@ -14,4 +14,4 @@ const Home = function (props) {
     }
 };
 
-export default Home;
+export { Home };

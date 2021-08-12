@@ -198,4 +198,4 @@ const Explorer = function ({ trackData }) {
     }
 };
 
-export default Explorer;
+export { Explorer };
