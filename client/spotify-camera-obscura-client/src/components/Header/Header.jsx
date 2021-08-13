@@ -1,5 +1,9 @@
 const Header = () => {
-    return <p>CAMERA OBSCURA</p>;
+    return (
+        <div className="header">
+            <p>CAMERA OBSCURA</p>
+        </div>
+    );
 };
 
 export { Header };
