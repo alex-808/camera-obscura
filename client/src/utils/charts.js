@@ -1,18 +1,18 @@
 const randomColor = function (r, g, b, a) {
-  const red = r || Math.floor(Math.random() * 256);
-  const green = g || Math.floor(Math.random() * 256);
-  const blue = b || Math.floor(Math.random() * 256);
-  const alpha = a || 1;
-  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
-};
+  const red = r || Math.floor(Math.random() * 256)
+  const green = g || Math.floor(Math.random() * 256)
+  const blue = b || Math.floor(Math.random() * 256)
+  const alpha = a || 1
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`
+}
 
 class Dataset {
   constructor(label, data, bgColor, bdrColor, tension) {
-    this.label = label || '';
-    this.data = data || [];
-    this.backgroundColor = bgColor || randomColor();
-    this.borderColor = bdrColor || randomColor();
-    this.tension = tension || 0.5;
+    this.label = label || ''
+    this.data = data || []
+    this.backgroundColor = bgColor || randomColor()
+    this.borderColor = bdrColor || randomColor()
+    this.tension = tension || 0.5
   }
 }
 
@@ -30,7 +30,7 @@ const ANALYSIS_FEATURES = [
   'tempo',
   'time_signature',
   'valence',
-];
+]
 
 const CHART_COLORS = [
   '#F786A4',
@@ -45,22 +45,22 @@ const CHART_COLORS = [
   '#C4ADB3',
   'brown',
   'grey',
-];
+]
 
 const CHART_TYPES = {
   Linegraph: 'linegraph',
   Bargraph: 'bargraph',
-};
+}
 
 const hideUnusedDatasets = function (datasets, enabledFeatures) {
   for (let dataset of datasets) {
-    dataset.hidden = !enabledFeatures.includes(dataset.label);
+    dataset.hidden = !enabledFeatures.includes(dataset.label)
     // dataset.fill = '+1';
   }
-  return datasets;
-};
+  return datasets
+}
 
-const DEFAULT_ENABLED_FEATURES = ['energy', 'danceability', 'acousticness'];
+const DEFAULT_ENABLED_FEATURES = ['energy', 'danceability', 'acousticness']
 
 export {
   randomColor,
@@ -70,4 +70,4 @@ export {
   CHART_COLORS,
   CHART_TYPES,
   hideUnusedDatasets,
-};
+}

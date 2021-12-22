@@ -3,6 +3,27 @@
     "node-sass": "^6.0.1"
   },
   "devDependencies": {
+    "concurrently": "^6.5.1",
+    "prettier": "^2.5.1",
     "sass-loader": "^12.1.0"
-  }
+  },
+  "name": "spotify-camera-obscura",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,css,scss,md}\"",
+    "checkFormatting": "prettier --check \"./**/*.{js,jsx,ts,tsx,css,scss,md}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rawbeef-808/camera-obscura.git"
+  },
+  "author": "Alex Davis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rawbeef-808/camera-obscura/issues"
+  },
+  "homepage": "https://github.com/rawbeef-808/camera-obscura#readme",
+  "description": ""
 }

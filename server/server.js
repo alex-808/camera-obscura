@@ -1,34 +1,34 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
+import express from 'express'
+import cors from 'cors'
+import bodyParser from 'body-parser'
 import {
-    login,
-    logout,
-    postPlaylists,
-    getPlaylists,
-    getRedirect,
-    getRefreshAccessToken,
-} from './controllers/controllers.js';
+  login,
+  logout,
+  postPlaylists,
+  getPlaylists,
+  getRedirect,
+  getRefreshAccessToken,
+} from './controllers/controllers.js'
 
-const app = express();
+const app = express()
 
-app.use(cors());
-app.use(bodyParser());
+app.use(cors())
+app.use(bodyParser())
 
-app.get('/login', login);
+app.get('/login', login)
 
-app.get('/redirect', getRedirect);
+app.get('/redirect', getRedirect)
 
-app.get('/playlists', getPlaylists);
+app.get('/playlists', getPlaylists)
 
-app.post('/playlists', postPlaylists);
+app.post('/playlists', postPlaylists)
 
-app.get('/logout', logout);
+app.get('/logout', logout)
 
-app.get('/refresh', getRefreshAccessToken);
+app.get('/refresh', getRefreshAccessToken)
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000
 
 app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
-});
+  console.log(`Listening on port ${PORT}`)
+})
