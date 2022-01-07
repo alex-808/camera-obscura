@@ -16,50 +16,52 @@ const Linegraph = function ({
     datasets: datasets,
   }
 
-  const viewMethods = new dateUtils.ViewMethods(view)
-
   useEffect(() => {
+    const viewMethods = new dateUtils.ViewMethods(view)
     const chart = chartRef.current
-    updateSelectedElements(chart)
-  })
+    // This useEffect allows a hover on calendar to highlight the same
+    // day on chart via change in selectedDateRange prop
 
-  function updateSelectedElements(chart) {
-    if (!chart) return
-    let data = chart.data.datasets
-    const isSameTimePeriod = viewMethods.getComparer()
+    function updateSelectedElements(chart) {
+      if (!chart) return
+      let datasets = chart.data.datasets
+      const isSameTimePeriod = viewMethods.getComparer()
 
-    const selectedIndex = data[0].data.findIndex(el => {
-      return isSameTimePeriod(el.date, selectedDateRange[0])
-    })
+      const selectedIndex = datasets[0].data.findIndex(el => {
+        return isSameTimePeriod(el.date, selectedDateRange[0])
+      })
 
-    if (selectedDateRange[0] === 0 || selectedIndex === -1) {
-      disableAllElements(chart)
-    } else {
-      activateSelectedElements(chart, selectedIndex)
-    }
-    chart.render()
-  }
-
-  function activateSelectedElements(chart, selectedIndex) {
-    const activeElements = []
-    const n = Object.entries(datasets).length
-    for (let i = 0; i < n; i++) {
-      if (enabledFeatures.includes(datasets[i].label)) {
-        activeElements.push({
-          datasetIndex: i,
-          index: selectedIndex,
-        })
+      if (selectedDateRange[0] === 0 || selectedIndex === -1) {
+        disableAllElements(chart)
+      } else {
+        activateSelectedElements(chart, selectedIndex)
       }
+      chart.render()
     }
-    if (!activeElements.length) return
-    chart.setActiveElements(activeElements)
-    chart.tooltip.setActiveElements(activeElements)
-  }
 
-  function disableAllElements(chart) {
-    chart.setActiveElements([])
-    chart.tooltip.setActiveElements([])
-  }
+    function activateSelectedElements(chart, selectedIndex) {
+      const activeElements = []
+      const n = Object.entries(datasets).length
+      for (let i = 0; i < n; i++) {
+        if (enabledFeatures.includes(datasets[i].label)) {
+          activeElements.push({
+            datasetIndex: i,
+            index: selectedIndex,
+          })
+        }
+      }
+      if (!activeElements.length) return
+      chart.setActiveElements(activeElements)
+      chart.tooltip.setActiveElements(activeElements)
+    }
+
+    function disableAllElements(chart) {
+      chart.setActiveElements([])
+      chart.tooltip.setActiveElements([])
+    }
+
+    updateSelectedElements(chart)
+  }, [selectedDateRange, datasets, enabledFeatures, view])
 
   const setupOpts = function (view, opts) {
     const viewTooltipFormats = {
@@ -94,17 +96,16 @@ const Linegraph = function ({
       mode: 'index',
     },
     scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true,
-            font: {
-              family: 'Arial',
-              size: 14,
-            },
+      yAxes: {
+        ticks: {
+          beginAtZero: true,
+          font: {
+            family: 'Roboto',
+            size: 10,
           },
         },
-      ],
+      },
+
       xAxes: {
         type: 'time',
         time: {
@@ -114,8 +115,8 @@ const Linegraph = function ({
         ticks: {
           beginAtZero: true,
           font: {
-            family: 'Arial',
-            size: 14,
+            family: 'Roboto',
+            size: 16,
           },
         },
       },
@@ -125,6 +126,7 @@ const Linegraph = function ({
         onHover: onLegendHover,
         onClick: onLegendClick,
         position: 'bottom',
+        align: 'start',
         labels: {
           font: {
             family: 'Roboto',
