@@ -31,6 +31,7 @@ const GraphHandler = function ({ datasets, currentView, selectedDateRange }) {
     const wasHidden = legendItem.hidden
     const legendItemLabel = legendItem.text
 
+    // update enabledFeatures
     if (wasHidden) {
       setEnabledFeatures([...enabledFeatures, legendItemLabel])
     } else {
