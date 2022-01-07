@@ -60,7 +60,7 @@ const Explorer = function ({ trackData }) {
     return { datasets: datasets }
   }
 
-  function createGraphTypeDatasets(dateFeatures) {
+  function createGraphTypeDatasets(dateFeatures = []) {
     const graphType = getGraphType(dateFeatures)
     const datasets = createEmptyDataSets(ANALYSIS_FEATURES)
     for (let dateFeature of dateFeatures) {
