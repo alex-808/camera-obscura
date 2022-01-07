@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Calendar as ReactCalendar } from 'react-calendar'
 import { TileContent } from './Explorer/TileContent/TileContent'
 import * as dates from '../utils/dates'
-import 'react-calendar/dist/Calendar.css'
+import '../Calendar.css'
 
 const Calendar = ({ trackData, setSelectedDateRange, updateDataSets }) => {
   const [selectedTile, setSelectedTile] = useState()
